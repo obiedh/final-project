@@ -38,4 +38,25 @@ other response:
     "error": "Invalid username or password"
 }
 
+api URL: http://127.0.0.1:5000/api/update_preference
+body:
+{
+    "user_id": "4fd1403c-e3ab-4089-92f2-9c02acbacf38",
+    "preference": "wifi-1, parking-0, showers"
+}
+
+response:
+{
+    "message": "Preference updated successfully"
+}
+
+other response:
+{
+    "error": "User ID and preference are required"
+}
+
+other response:
+{
+    "error": "User ID must be a valid UUID"
+}
 """

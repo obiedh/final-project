@@ -56,3 +56,9 @@ class UserService():
             }), 200
 
         return jsonify({'error': 'Invalid username or password'}), 401  # HTTP 401 Unauthorized
+    
+    def update_preference(self, user_id, preference):
+        user, message = self.user_dao.update_preference(user_id, preference)
+        if not user:
+            return {'message': message}, 404
+        return {'message': message}, 200
