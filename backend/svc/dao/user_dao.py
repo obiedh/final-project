@@ -16,9 +16,12 @@ class UserDAO():
     def get_user_by_username(self, username):
         user = User.query.filter_by(username=username).first()
         return user
+    
+    def get_user_by_id(self, user_id):
+        return db.session.query(User).filter_by(uid=user_id).first()
 
-    def update_preference(self, user_id, preference):
-        user = db.session.query(User).filter(User.uid == user_id).first()
+    def update_preference(self, username, preference):
+        user = db.session.query(User).filter(User.username == username).first()
         if not user:
             return None, "User not found"
         
