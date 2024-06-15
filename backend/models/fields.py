@@ -16,6 +16,9 @@ class Field(db.Model):
     manager_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey('users.uid'), nullable=False)
     utilities = db.Column(postgresql.JSON, nullable=True) 
 
+    manager = db.relationship('User', back_populates='fields_managed')
+
+
     def asdict(self):
         return {
             'uid': self.uid,

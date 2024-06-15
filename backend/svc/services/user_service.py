@@ -1,4 +1,6 @@
 from svc.dao.user_dao import UserDAO
+from svc.dao.favorites_dao import FavoritesDAO
+from svc.dao.fields_dao import FieldDAO
 from flask import jsonify
 from sqlalchemy.exc import IntegrityError
 from flask_bcrypt import Bcrypt
@@ -10,6 +12,9 @@ bcrypt = Bcrypt()
 class UserService():
     def __init__(self):
         self.user_dao = UserDAO()
+        self.favorites_dao = FavoritesDAO()
+        self.fields_dao = FieldDAO()
+
 
     def create_user(self, data):
         if not data:
@@ -62,3 +67,72 @@ class UserService():
         if not user:
             return {'message': message}, 404
         return {'message': message}, 200
+    
+    def add_favorite(self, data):
+        user_id = data['user_id']
+        field_id = data['field_id']
+        if not user_id or not field_id:
+            return jsonify({'error': 'User ID and Field ID are required'}), 400
+
+        # Check if the user exists
+        user = self.user_dao.get_user_by_id(user_id)
+        if not user:
+            return jsonify({'error': 'User does not exist'}), 404
+
+        # Check if the field exists
+        field = self.fields_dao.get_field_by_id(field_id)
+        if not field:
+            return jsonify({'error': 'Field does not exist'}), 404
+
+        # Check if the field is already in the user's favorites
+        existing_favorite = self.favorites_dao.get_favorite_by_user_and_field(user_id, field_id)
+        if existing_favorite:
+            return jsonify({'error': 'This field is already in your favorites'}), 400
+
+        # Create a new favorite record
+        response = self.favorites_dao.create_favorite(user_id, field_id)
+        return response
+    
+    # Method to remove a field from the user's favorites
+    def remove_favorite(self, user_id, field_id):
+        if not user_id or not field_id:
+            return jsonify({'error': 'User ID and Field ID are required'}), 400
+
+        # Check if the field is in the user's favorites
+        existing_favorite = self.favorites_dao.get_favorite_by_user_and_field(user_id, field_id)
+        if not existing_favorite:
+            return jsonify({'error': 'This field is not in your favorites'}), 400
+
+        # Delete the favorite record
+        response = self.favorites_dao.delete_favorite(existing_favorite)
+        return response
+    
+    def get_user_favorite_fields(self,user_id):
+        if not user_id:
+            return {"error": "user_id is required."}, 400
+        
+        favorite_fields = self.favorites_dao.get_favorite_fields_by_user(user_id)
+
+        if not favorite_fields:
+            return {"message": "No favorite fields found for this user."}, 404
+
+        favorite_fields_details = []
+        for favorite in favorite_fields:
+            field_id = favorite.field_id
+            field = self.fields_dao.get_single_field_by_id(field_id)
+            print(f"field_id: {field_id}, field: {field}")
+            if field:
+                field_info = {
+                    "uid": field.uid,
+                    "name": field.name,
+                    "location": field.location,
+                    "latitude": field.latitude,
+                    "longitude": field.longitude,
+                    "sport_type": field.sport_type,
+                    "imageURL": field.imageURL,
+                    "manager_id" : field.manager_id,
+                    "utilities" : field.utilities
+                }
+                favorite_fields_details.append(field_info)
+
+        return favorite_fields_details, 200
