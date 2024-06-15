@@ -12,3 +12,6 @@ class User(db.Model):
     user_type = db.Column(String(20))
     preference = db.Column(String, nullable=True)
 
+    favorites = db.relationship('Favorites', back_populates='user')
+    fields_managed = db.relationship('Field', back_populates='manager')
+

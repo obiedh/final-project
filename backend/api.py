@@ -118,3 +118,40 @@ def get_fields_by_manager_id():
     field_service = FieldService()
     fields, status_code = field_service.get_fields_by_manager_id(manager_id)
     return jsonify(fields), status_code
+
+@api_bp.route('/add_favorite', methods=['POST'])
+def add_favorite():
+    data = request.json
+    user_id = data.get('user_id')
+    field_id = data.get('field_id')
+    if not is_valid_uuid(user_id):
+        return jsonify({'error': 'User ID must be a valid UUID'}), 400
+    if not is_valid_uuid(field_id):
+        return jsonify({'error': 'Field ID must be a valid UUID'}), 400
+
+    user_service = UserService()
+    response = user_service.add_favorite(data)
+    return response
+
+@api_bp.route('/remove_favorite', methods=['POST'])
+def remove_favorite():
+    user_id = request.json.get('user_id')
+    field_id = request.json.get('field_id')
+    if not is_valid_uuid(user_id):
+        return jsonify({'error': 'User ID must be a valid UUID'}), 400
+    if not is_valid_uuid(field_id):
+        return jsonify({'error': 'Field ID must be a valid UUID'}), 400
+
+    user_service = UserService()
+    response = user_service.remove_favorite(user_id, field_id)
+    return response
+
+@api_bp.route('/get_user_favorites', methods=['POST'])
+def get_user_favorites():
+    user_id = request.json.get('user_id')
+    if not is_valid_uuid(user_id):
+        return jsonify({'error': 'User ID must be a valid UUID'}), 400
+
+    user_service = UserService()
+    favorite_fields, status_code = user_service.get_user_favorite_fields(user_id)
+    return jsonify(favorite_fields), status_code
