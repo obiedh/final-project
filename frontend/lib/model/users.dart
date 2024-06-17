@@ -5,12 +5,14 @@ class Users {
     required this.password,
     required this.phoneNumber,
     required this.authenticationVar,
+    this.preferences,
   });
   String id;
   String name;
   String password;
   String phoneNumber;
   String authenticationVar;
+  String? preferences;
 }
 
 
