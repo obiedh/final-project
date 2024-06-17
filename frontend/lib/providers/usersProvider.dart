@@ -7,6 +7,7 @@ Users serverer = Users(
   name: "",
   authenticationVar: "",
   password: "",
+  preferences: "",
 );
 
 class UserSingletonNotifier extends StateNotifier<Users> {
@@ -33,7 +34,7 @@ class UserSingletonNotifier extends StateNotifier<Users> {
     return "piere";
   }
 
-  void AuthSucceed(String email, String id, String userType) {
+  void AuthSucceed(String email, String id, String userType, String preference) {
     print("what!!!");
     state = Users(
       authenticationVar: userType,
@@ -41,6 +42,7 @@ class UserSingletonNotifier extends StateNotifier<Users> {
       phoneNumber: serverer.phoneNumber,
       id: id,
       password: serverer.password,
+      preferences: preference
     );
   }
 
