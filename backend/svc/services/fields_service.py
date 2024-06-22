@@ -1,3 +1,4 @@
+import json
 from flask import jsonify
 from svc.dao.fields_dao import FieldDAO
 from svc.dao.user_dao import UserDAO
@@ -16,6 +17,7 @@ class FieldService():
             print(user_info.user_type)
             return jsonify({'error': 'Only managers can create fields'}), 403
         
+        data['utilities'] = json.loads(data['utilities']) 
         response = self.field_dao.create_field(data=data)
         return response
     
@@ -23,13 +25,18 @@ class FieldService():
         field = self.field_dao.update_conf_interval(field_id, conf_interval)
         if not field:
             return {'message': 'Field not found'}, 404
-        return field.asdict(), 200
+        field_dict = field.asdict()
+        field_dict['average_rating'] = self.field_dao.get_average_rating(field.uid)
+        return field_dict, 200
     
     def update_field_details(self, field_id, name, utilities):
+        utilities = json.loads(utilities)  # Parse utilities JSON string
         field = self.field_dao.update_field_details(field_id, name, utilities)
         if not field:
             return {'message': 'Field not found'}, 404
-        return field.asdict(), 200
+        field_dict = field.asdict()
+        field_dict['average_rating'] = self.field_dao.get_average_rating(field.uid)
+        return field_dict, 200
     
     def delete_field(self, field_id, manager_id):
         field, message = self.field_dao.delete_field(field_id, manager_id)
@@ -44,7 +51,9 @@ class FieldService():
 
         all_fields = []
         for field in fields:
-            all_fields.append(field.asdict())
+            field_dict = field.asdict()
+            field_dict['average_rating'] = self.field_dao.get_average_rating(field.uid)
+            all_fields.append(field_dict)
         return all_fields, 200
     
     def get_fields_by_manager_id(self, manager_id):
@@ -54,5 +63,7 @@ class FieldService():
 
         all_fields = []
         for field in fields:
-            all_fields.append(field.asdict())
+            field_dict = field.asdict()
+            field_dict['average_rating'] = self.field_dao.get_average_rating(field.uid)
+            all_fields.append(field_dict)
         return all_fields, 200

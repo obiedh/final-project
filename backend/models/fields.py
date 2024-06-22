@@ -1,5 +1,5 @@
 from svc.db import db
-from sqlalchemy.dialects import postgresql
+from sqlalchemy.dialects.postgresql import JSON
 
 
 class Field(db.Model):
@@ -14,10 +14,11 @@ class Field(db.Model):
     conf_interval = db.Column(db.String, nullable=True)  
     imageURL = db.Column(db.String(100))
     manager_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey('users.uid'), nullable=False)
-    utilities = db.Column(postgresql.JSON, nullable=True) 
+    utilities = db.Column(JSON, nullable=True) 
 
+    reservations = db.relationship('Reservations', back_populates='field')
+    ratings = db.relationship('Ratings', back_populates='field')
     manager = db.relationship('User', back_populates='fields_managed')
-
 
     def asdict(self):
         return {

@@ -20,11 +20,8 @@ class UserDAO():
     def get_user_by_id(self, user_id):
         return db.session.query(User).filter_by(uid=user_id).first()
 
-    def update_preference(self, username, preference):
-        user = db.session.query(User).filter(User.username == username).first()
-        if not user:
-            return None, "User not found"
-        
+    def update_preference(self, user_name, preference):
+        user = db.session.query(User).filter(User.username == user_name).first() 
         user.preference = preference
         db.session.commit()
-        return user, "Preference updated successfully"
+        return "Preference updated successfully"

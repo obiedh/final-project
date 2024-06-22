@@ -1,8 +1,12 @@
+import json
 import uuid
 from flask import Blueprint
 from flask import request, Blueprint, jsonify,send_file
 from svc.services.user_service import UserService
 from svc.services.fields_service import FieldService
+from svc.services.ratings_service import RatingsService
+from svc.services.reservation_service import ReservationService
+
 #API EXAMPLES ARE INSIDE THE FILE API_EXAMPLES.
 
 api_bp = Blueprint('api', __name__)
@@ -46,6 +50,7 @@ def update_preference():
 @api_bp.route('/create_field', methods=['POST'])
 def create_field():
     data = request.json
+    data['utilities'] = json.dumps(data['utilities']) 
     manager_id = data['manager_id']
     if not is_valid_uuid(manager_id):
         return jsonify({'error': 'Manager ID must be a valid UUID'}), 400
@@ -70,7 +75,7 @@ def update_conf_interval():
 def update_field_details():
     field_id = request.json.get('field_id')
     name = request.json.get('name')
-    utilities = request.json.get('utilities')
+    utilities = json.dumps(request.json.get('utilities'))  # Ensure utilities is a JSON string
     
     if not field_id:
         return jsonify({'error': 'Field ID is required'}), 400
@@ -155,3 +160,67 @@ def get_user_favorites():
     user_service = UserService()
     favorite_fields, status_code = user_service.get_user_favorite_fields(user_id)
     return jsonify(favorite_fields), status_code
+
+@api_bp.route('/add_rating', methods=['POST'])
+def create_rating():
+    data = request.json
+    field_id = data["field_id"]
+    if not is_valid_uuid(field_id):
+        return jsonify({"error": "Field ID must be a valid UUID"}), 400
+    user_id = data["user_id"]
+    if not is_valid_uuid(user_id):
+        return jsonify({"error": "User ID must be a valid UUID"}), 400
+    ratings_service = RatingsService()
+    response, status_code = ratings_service.create_rating(data)
+    return jsonify(response), status_code
+
+
+@api_bp.route('/create_reservation', methods=['POST'])
+def create_reservation():
+    data = request.json
+    reservation_service = ReservationService()
+    response = reservation_service.create_reservation(data=data)
+    return response
+
+@api_bp.route('/get_reservation', methods=['POST'])
+def get_reservation():
+    user_id = request.json.get('uuid')
+    if not is_valid_uuid(user_id):
+        return jsonify({'error': 'User ID must be a valid UUID'}), 400
+    
+    reservation_service = ReservationService()
+    response, status_code = reservation_service.get_reservation(user_id)
+    return jsonify(response), status_code
+
+@api_bp.route('/update_reservation_status', methods=['PUT'])
+def update_reservation_status():
+    reservation_uuid = request.json.get('reservation_uuid')
+    status = request.json.get('status')
+
+    if not reservation_uuid:
+        return jsonify({"error": "Reservation UUID is required"}), 400
+    if not is_valid_uuid(reservation_uuid):
+        return jsonify({'error': 'Reservation UUID must be a valid UUID'}), 400
+    
+    if not status:
+        return jsonify({"error": "Status is required"}), 400
+
+    reservation_service = ReservationService()
+    success = reservation_service.update_reservation_status(reservation_uuid, status)
+
+    if success:
+        return jsonify({"message": "Reservation status updated successfully"}), 200
+    else:
+        return jsonify({"error": "Reservation not found or status update failed"}), 404
+    
+@api_bp.route('/get_reservations_by_manager', methods=['POST'])
+def get_reservations_by_manager():
+    manager_id = request.json.get('manager_id')
+    if not manager_id:
+        return jsonify({'error': 'Manager ID parameter is required'}), 400
+    if not is_valid_uuid(manager_id):
+        return jsonify({'error': 'Manager ID must be a valid UUID'}), 400
+    
+    reservation_service = ReservationService()
+    reservations, status_code = reservation_service.get_reservations_by_manager(manager_id)
+    return jsonify(reservations), status_code

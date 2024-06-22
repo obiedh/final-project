@@ -31,7 +31,7 @@ class FieldDAO():
         )
         db.session.add(new_field)
         db.session.commit()
-        return jsonify({'message': 'Field created successfully'}), 201
+        return jsonify({'Field_id': new_field.uid }), 201
     
     def update_conf_interval(self, field_id, conf_interval):
         field = db.session.query(Field).filter(Field.uid == field_id).first()
@@ -59,7 +59,6 @@ class FieldDAO():
         fields = db.session.query(Field).filter(Field.sport_type == sport_type).all()
         return fields
     
-
     def delete_field(self, field_id, manager_id):
         field = db.session.query(Field).filter(Field.uid == field_id).first()
         if not field:
