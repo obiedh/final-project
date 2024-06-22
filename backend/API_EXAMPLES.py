@@ -1,67 +1,67 @@
 """
 api URL:  http://127.0.0.1:5000/api/create_user
-    body:
+body:
     {
         "firstname" :"obied",
         "password" : "haddad",
         "phonenum" : "0509021620"
     }
 
-    response:
+response:
     {
         'message': 'User created successfully',
         'username': "obied",
         'phonenum': "0509021620"
     }
 
-    other response:
+other response:
     {
         "error": "User with this username already exists"
     }
 
 api URL:  http://127.0.0.1:5000/api/user_verfication
-    body:
+body:
     {
         "username" :"obied",
         "password" : "haddad",
     }
 
-    response:
+response:
     {
         "message": "User Verified",
         "user_type": "regular",
         "userid": "e7f67d04-341d-4f00-b022-ee1af42f6141"
     }
 
-    other response:
+other response:
     {
         "error": "Invalid username or password"
     }
 
 api URL: http://127.0.0.1:5000/api/update_preference
-    body:
+body:
     {
         "username": "obied",
         "preference": "wifi-1, parking-0, showers"
     }
 
-    response:
+response:
     {
         "message": "Preference updated successfully"
     }
 
-    other response:
+other response:
     {
         "error": "User ID and preference are required"
     }
 
-    other response:
+other response:
     {
         "error": "User ID must be a valid UUID"
     }
 
 api_url: http://localhost:5000/api/create_field
-    body:
+body:
     {
         "name": "adi club",
         "location": "adi",
@@ -79,28 +79,28 @@ api_url: http://localhost:5000/api/create_field
             "Free parking": 0
         }
     }
-    response:
+response:
     {
         "message": "Field created successfully"
     }
 
-    another response:
+other response:
     {
         "error": "Field with the same name, location, and sport type already exists"
     }
-    OR:
+OR:
     {
         "error": "Manager ID must be a valid UUID"
     }
 
 api URL: http://127.0.0.1:5000/api/update_conf_interval
-    body:
+body:
     {
         "field_id": "some-field-uuid",
         "conf_interval": "14:00-15:00,50 15:00-16:00,60 08:00-09:00,5"
     }
 
-    response:
+response:
     {
         "imageURL": "lib/images/samir_stadium.jpg",
         "latitude": "17.53.85",
@@ -118,22 +118,22 @@ api URL: http://127.0.0.1:5000/api/update_conf_interval
         }
     }
 
-    other response:
+other response:
     {
         "message": "Field not found"
     }
-    OR:
+OR:
     {
         "error": "Field ID is required"
     }
-    OR:
+OR:
     {
         "error": "Field ID must be a valid UUID"
     }
 
 
 api URL: http://127.0.0.1:5000/api/update_field_details
-    body:
+body:
     {
         "field_id": "94154805-8c01-4653-8592-feb960805ea8",
         "name": "Marcana Shefa",
@@ -146,7 +146,7 @@ api URL: http://127.0.0.1:5000/api/update_field_details
         }
     }
 
-    response:
+response:
     {
         "imageURL": "lib/images/samir_stadium.jpg",
         "latitude": "17.53.85",
@@ -164,16 +164,16 @@ api URL: http://127.0.0.1:5000/api/update_field_details
         }
     }
 
-    other response:
+other response:
     {
         "message": "Field not found"
     }
 
-    other response:
+other response:
     {
         "error": "Field ID must be a valid UUID"
     }
-    OR:
+OR:
     {
         "error": "Field ID is required"
     }
@@ -181,36 +181,36 @@ api URL: http://127.0.0.1:5000/api/update_field_details
 
 
 api URL: http://127.0.0.1:5000/api/delete_field
-    body:
+body:
     {
         "field_id": "valid-field-uuid",
         "manager_id": "valid-manager-uuid"
     }
 
-    response:
+response:
     {
         "message": "Field deleted successfully"
     }
 
-    other response:
+other response:
     {
         "message": "Field ID and Manager ID are required"
     }
-    OR:
+OR:
     {
         "message": "Field ID and Manager ID must be valid UUIDs"
     }
-    OR:
+OR:
     {
         "message": "Field does not belong to this manager"
     }
   
 api_url: http://127.0.0.1:5000/api/get_fields_by_sport_type
-    body:
+body:
     {
     "sport_type": "football"
     }
-    response:
+response:
     [
         {
             "imageURL": "lib/images/samir_stadium.jpg",
@@ -246,21 +246,21 @@ api_url: http://127.0.0.1:5000/api/get_fields_by_sport_type
         }
     ]
 
-    other response:
+other response:
     {
         "message": "No fields found for the given sport type"
     }
-    OR:
+OR:
     {
         "error": "Sport type parameter is required"
     }
 
 api_url: http://127.0.0.1:5000/api/get_fields_by_manager_id
-    body:
+body:
     {
     "manager_id": "984622a0-ec0f-427a-b004-a0573b8933d3"
     }
-    response:
+response:
     [
         {
             "imageURL": "lib/images/samir_stadium.jpg",
@@ -328,16 +328,212 @@ api_url: http://127.0.0.1:5000/api/get_fields_by_manager_id
         }
     ]
 
-    other respone:
+other respone:
     {
         "message": "No fields found for the given Manager ID"
     }
-    OR:
+OR:
     {
         "error": "Manager ID must be a valid UUID"
     }
-    OR:
+OR:
     {
         "error": "Manager ID parameter is required"
     }
+
+
+api URL: http://127.0.0.1:5000/api/add_rating
+body:
+    {
+        "field_id": "0d4d41a4-105c-48ad-80a2-5c5e0e8f3f7f",
+        "user_id": "ab40d55f-0b04-46a0-9225-02beca70ecfd",
+        "rating": 4.5
+    }
+response:
+    {
+        "message": "Rating created successfully"
+    }
+OR:
+    {
+        "message": "Rating updated successfully"
+    }
+
+Other response:
+    {
+        "error": "User does not exist."
+    }
+OR:
+    {
+        "error": "Field does not exist."
+    }
+OR:
+    {
+        "error": "Field ID must be a valid UUID"
+    }
+OR:
+    {
+        "error": "User ID must be a valid UUID"
+    }
+
+api_url: http://127.0.0.1:5000/api/create_reservation
+body:
+    {
+    "field_id": "25096a7b-4566-4f34-b45e-920e3d67cde9",
+    "date": "20.09.2023",
+    "interval_time": "15:00-17:00",
+    "status": "pending",
+    "du_date": "20.09.2023",
+    "du_time": "18:00",
+    "user_uuid": "c22424d8-909a-45a1-809a-6e06bbdc0aa8",
+    "price": "50",
+    "field_name": "samer",
+    "location": "shefa-amr",
+        "imageURL": "http://10.0.0.12/api/images/samir_stadium.jpg"
+    }
+response:
+    {
+        "message": "Reservation created successfully"
+    }
+
+api_url:http://127.0.0.1:5000/api/get_reservation
+body:
+    {
+        "uuid": "d8856094-79d0-44fd-9819-01f6f1a7b982"
+    }
+response:
+    [
+        {
+            "date": "20.09.2023",
+            "du_date": "20.09.2023",
+            "du_time": "17:00",
+            "field_id": "171bc20e-7964-4045-90e8-cb3429455a05",
+            "imageURL": "http://10.0.0.12/api/images/samir_stadium.jpg",
+            "interval_time": "15:00-17:00",
+            "location": "haifa",
+            "name": "marcana",
+            "price": 50,
+            "status": "pending",
+            "uid": "c21dd6af-3b40-40d0-9348-afeaf77de7a7",
+            "user_uuid": "d8856094-79d0-44fd-9819-01f6f1a7b982"
+        },
+        {
+            "date": "20.09.2023",
+            "du_date": "20.09.2023",
+            "du_time": "17:00",
+            "field_id": "25096a7b-4566-4f34-b45e-920e3d67cde9",
+            "imageURL": "http://10.0.0.12/api/images/samir_stadium.jpg",
+            "interval_time": "15:00-17:00",
+            "location": "haifa",
+            "name": "marcana",
+            "price": 50,
+            "status": "pending",
+            "uid": "0963245a-7856-4c09-b798-58288a026598",
+            "user_uuid": "d8856094-79d0-44fd-9819-01f6f1a7b982"
+        },
+        {
+            "date": "20.09.2023",
+            "du_date": "20.09.2023",
+            "du_time": "17:00",
+            "field_id": "25096a7b-4566-4f34-b45e-920e3d67cde9",
+            "imageURL": "http://10.0.0.12/api/images/samir_stadium.jpg",
+            "interval_time": "15:00-17:00",
+            "location": "shefa-amr",
+            "name": "samer",
+            "price": 50,
+            "status": "pending",
+            "uid": "ecb1512e-f714-4c35-abb4-26e26c465218",
+            "user_uuid": "d8856094-79d0-44fd-9819-01f6f1a7b982"
+        }
+    ]
+
+Other response:
+    {
+        "error": "User ID must be a valid UUID"
+    }
+OR:
+    {
+        "error": "User does not exist"
+    }
+OR:
+    {
+        "message": "No reservations found for the given user ID"
+    }
+
+api_url: http://127.0.0.1:5000/api/update_reservation_status
+body:
+    {
+    "reservation_uuid": "c21dd6af-3b40-40d0-9348-afeaf77de7a7",
+    "status": "Accepted"
+    }
+response:
+    {
+        "message": "Reservation status updated successfully"
+    }
+
+Other response:
+    {
+        "message": "Reservation not found or status update failed"
+    }
+OR:
+    {   
+        "error": "Status is required"
+    }
+OR:
+    {
+        'error': 'Reservation UUID must be a valid UUID'
+    }
+OR:
+    {
+        "error": "Reservation UUID is required"
+    }
+
+api_url:http://127.0.0.1:5000/api/get_reservations_by_manager
+body:
+    {
+        "manager_id": "6d3c4dc5-0951-41b1-afc7-139cc019e1a1"
+    }
+response:
+    [
+        {
+            "date": "28.09.2023",
+            "du_date": "28.09.2023",
+            "du_time": "15:00",
+            "field_id": "cf98fbe7-bf6c-4136-a7e3-b41dc7506571",
+            "imageURL": "http://10.0.0.12/api/images/samir_stadium.jpg",
+            "interval_time": "14:00-15:00",
+            "location": "haifa",
+            "name": "marcana",
+            "price": 50,
+            "status": "pending",
+            "uid": "a9f0b2b4-0855-4bd8-b23f-ebca3257e2bf",
+            "user_uuid": "fc328116-cc1a-4c53-81f1-9db545c40d78"
+        },
+        {
+            "date": "28.09.2023",
+            "du_date": "28.09.2023",
+            "du_time": "18:00",
+            "field_id": "cf98fbe7-bf6c-4136-a7e3-b41dc7506571",
+            "imageURL": "http://10.0.0.12/api/images/samir_stadium.jpg",
+            "interval_time": "18:00-20:00",
+            "location": "haifa",
+            "name": "marcana",
+            "price": 60,
+            "status": "pending",
+            "uid": "56318498-4673-41b2-a1b4-6ddc831df8ff",
+            "user_uuid": "fc328116-cc1a-4c53-81f1-9db545c40d78"
+        }
+    ]
+
+Other esponse:
+    {
+        "error": "Manager ID parameter is required"
+    }
+OR:
+    {
+        "error": "Manager ID must be a valid UUID"
+    }
+OR:
+    {
+        "message": "No reservations found for the given manager ID"
+    }    
 """
