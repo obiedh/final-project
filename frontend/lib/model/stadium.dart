@@ -7,7 +7,7 @@ class Stadium {
     required this.latitude,
     required this.longitude,
     required this.type,
-    required this.rating,
+    this.rating,
     this.utilities,
     this.distance, // Distance is optional
     this.availability,
@@ -23,7 +23,7 @@ class Stadium {
   final double latitude;
   final double? distance; // Distance is nullable (optional)
   final String type;
-  final double rating;
+  final String? rating;
 
   Stadium copyWith({
     String? utilities,
@@ -41,6 +41,12 @@ class Stadium {
       rating: rating,
       utilities: utilities ?? this.utilities,
       distance: distance,
+      availability: availability ?? this.availability,
     );
+  }
+
+  @override
+  String toString() {
+    return 'Stadium{id: $id, title: $title, location: $location, imagePath: $imagePath, latitude: $latitude, longitude: $longitude, type: $type, rating: $rating, utilities: $utilities, distance: $distance, availability: $availability}';
   }
 }

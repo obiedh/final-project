@@ -120,7 +120,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               distance:
                   distance ?? 0.0, // Use a default value if distance is null
               // Ensure price is parsed as double
-              rating: 5,
+              rating: '5',
             ),
           );
         }

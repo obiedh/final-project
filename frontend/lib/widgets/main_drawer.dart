@@ -23,7 +23,7 @@ class MainDrawer extends ConsumerWidget {
       latitude: 45.5,
       longitude: 5445.5,
       type: "2",
-      rating: 5,
+      rating: '5',
     );
     String authenticationVar =
         ref.watch(userSingletonProvider).authenticationVar;
@@ -156,7 +156,7 @@ class MainDrawer extends ConsumerWidget {
                                   latitude: 45,
                                   longitude: 4,
                                   type: "22",
-                                  rating: 5,
+                                  rating: '5',
                                 ),
                               ),
                             ),
