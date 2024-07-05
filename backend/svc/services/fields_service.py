@@ -2,12 +2,16 @@ import json
 from flask import jsonify
 from svc.dao.fields_dao import FieldDAO
 from svc.dao.user_dao import UserDAO
+from svc.dao.reservation_dao import ReservationDAO
+
 
 class FieldService():
 
     def __init__(self):
         self.field_dao = FieldDAO()
         self.user_dao = UserDAO()
+        self.reservation_dao = ReservationDAO()
+
 
     def create_field(self, data):
         user_id = data['manager_id']
@@ -67,3 +71,36 @@ class FieldService():
             field_dict['average_rating'] = self.field_dao.get_average_rating(field.uid)
             all_fields.append(field_dict)
         return all_fields, 200
+    
+    def get_available_time_slots(self, data):
+            field_id = data.get('field_id')
+            date = data.get('date')
+
+            if not field_id or not date:
+                return {"error": "Field ID and date are required."}, 400
+
+            field = self.field_dao.get_field_by_id(field_id)
+
+            if not field:
+                return {"error": "Field not found."}, 404
+            
+            # Split the string by space to separate each time interval and price pair
+            conf_intervals = field.conf_interval.split(' ')
+
+            # Extract time intervals and prices as pairs and store them in a dictionary
+            time_price_map = {}
+            for interval in conf_intervals:
+                time_slot, price = interval.split(',')
+                time_price_map[time_slot] = price
+
+            reservations = self.reservation_dao.get_reservations_by_date(field_id, date)
+            reserved_time_slots = [reservation.interval_time for reservation in reservations]
+
+            free_conf_interval = []
+            for time_slot, price in time_price_map.items():
+                if time_slot not in reserved_time_slots:
+                    free_conf_interval.append(f"{time_slot},{price}")
+
+            response_str = ' '.join(free_conf_interval)
+
+            return response_str, 200
