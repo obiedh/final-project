@@ -33,6 +33,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   var _enteredPhoneNumber = "";
   var _twoAuthCode = "";
   var _error;
+  String _errorMEssage = "";
   var _userPrefrences = "";
   var _isLoading = false;
   var _isLoading_checkAuth = false;
@@ -297,10 +298,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                       if (!auth_success && isValid) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                          const SnackBar(
+                                           SnackBar(
                                             content: Text(
-                                                'Credentials are incorrect!'),
-                                            duration: Duration(seconds: 3),
+                                                _errorMEssage),
+                                            duration: const Duration(seconds: 3),
                                           ),
                                         );
                                       }
@@ -500,10 +501,32 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         },
         body: jsonEncode(requestBody),
       );
+      setState(() {
+        _isLoading = false;
+      });
       print(response.body);
-      if (response.statusCode >= 400) {
+      if (response.statusCode > 401) {
+        _errorMEssage = "Connection Error";
         return false;
       } else {
+
+      if(response.statusCode ==401){
+          _errorMEssage = "Wrong Credentials";
+          return false;
+        }
+
+        else{
+
+            if(response.statusCode!=200){
+              _errorMEssage = "Connection Faliur";
+              return false; 
+            }
+
+        }
+       
+      }
+        if(response.statusCode ==200) {
+        
         setState(() {
           final Map<String, dynamic> listData = json.decode(response.body);
           uuid = listData['userid'];
@@ -513,16 +536,15 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               .read(userSingletonProvider.notifier)
               .AuthSucceed(_enteredEmail, uuid, userType, _userPrefrences);
 
-          _isLoading = false;
-        });
+       });
         print(_userPrefrences);
-      }
+        return true;
+
+        }
+      
     } catch (error) {
-      print("error");
-      print("Error: $error");
-      setState(() {
-        // Handle the error
-      });
+      _errorMEssage= "Connection Faliure, try again later!";
+
     }
 
     return true;
