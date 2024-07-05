@@ -78,10 +78,6 @@ class FieldDAO():
         fields = db.session.query(Field).filter(Field.manager_id == manager_id).all()
         return fields
     
-    def get_single_field_by_id(self, field_id):
-        field = db.session.query(Field).filter(Field.uid == field_id).first()
-        return field
-    
     def get_field_by_id(self, field_id):
         field = db.session.query(Field).filter(Field.uid == field_id).first()
         return field

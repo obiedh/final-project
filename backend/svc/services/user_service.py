@@ -119,7 +119,7 @@ class UserService():
         favorite_fields_details = []
         for favorite in favorite_fields:
             field_id = favorite.field_id
-            field = self.fields_dao.get_single_field_by_id(field_id)
+            field = self.fields_dao.get_field_by_id(field_id)
             print(f"field_id: {field_id}, field: {field}")
             if field:
                 field_info = {

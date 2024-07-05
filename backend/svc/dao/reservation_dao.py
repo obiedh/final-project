@@ -55,4 +55,14 @@ class ReservationDAO():
             Reservations.field_id == Field.uid
         ).all()
         return reservations
+    
+    def get_reservations_by_date(self, field_id, date):
+        reservations = Reservations.query.filter(
+            and_(
+                Reservations.field_id == field_id,
+                Reservations.date == date,
+                Reservations.status != 'canceled'
+            )
+        ).all()
+        return reservations
 

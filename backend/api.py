@@ -124,6 +124,14 @@ def get_fields_by_manager_id():
     fields, status_code = field_service.get_fields_by_manager_id(manager_id)
     return jsonify(fields), status_code
 
+@api_bp.route('/get_field_by_id', methods=['POST'])
+def get_football_field_by_id():
+    data = request.json
+    field_service = FieldService()
+    response = field_service.get_available_time_slots(data=data)
+    print(response)
+    return response
+
 @api_bp.route('/add_favorite', methods=['POST'])
 def add_favorite():
     data = request.json
