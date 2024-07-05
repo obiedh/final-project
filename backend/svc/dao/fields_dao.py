@@ -1,5 +1,7 @@
 from models.fields import Field
+from models.ratings import Ratings
 from flask import  jsonify
+from sqlalchemy import func
 from svc.db import db
 import uuid
 
@@ -84,3 +86,6 @@ class FieldDAO():
         field = db.session.query(Field).filter(Field.uid == field_id).first()
         return field
     
+    def get_average_rating(self, field_id):
+        avg_rating = db.session.query(func.avg(Ratings.rating)).filter(Ratings.field_id == field_id).scalar()
+        return avg_rating if avg_rating is not None else 0
