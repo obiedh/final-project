@@ -15,4 +15,6 @@ class User(db.Model):
     favorites = db.relationship('Favorites', back_populates='user')
     ratings = db.relationship('Ratings', back_populates='user')
     fields_managed = db.relationship('Field', back_populates='manager')
+    payments = db.relationship('Payments', back_populates='user')
+
 

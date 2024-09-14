@@ -6,6 +6,7 @@ from svc.services.user_service import UserService
 from svc.services.fields_service import FieldService
 from svc.services.ratings_service import RatingsService
 from svc.services.reservation_service import ReservationService
+from svc.services.payments_service import PaymentsService
 
 #API EXAMPLES ARE INSIDE THE FILE API_EXAMPLES.
 
@@ -232,3 +233,32 @@ def get_reservations_by_manager():
     reservation_service = ReservationService()
     reservations, status_code = reservation_service.get_reservations_by_manager(manager_id)
     return jsonify(reservations), status_code
+
+@api_bp.route('/create_payment', methods=['POST'])
+def create_payment():
+    data = request.json
+    user_id = data.get('userid')
+    if not is_valid_uuid(user_id):
+        return jsonify({'error': 'User ID must be a valid UUID'}), 400
+    payments_service = PaymentsService()
+    response, status_code = payments_service.create_payments(data=data)
+    return jsonify(response), status_code
+
+@api_bp.route('/get_payment_by_id', methods=['POST'])
+def get_payment_by_id():
+    user_id = request.json.get('userid')
+    if not is_valid_uuid(user_id):
+        return jsonify({'error': 'User ID must be a valid UUID'}), 400
+    payments_service = PaymentsService()
+    response, status_code = payments_service.get_payment(user_id)
+    return jsonify(response), status_code
+
+@api_bp.route('/delete_payment', methods=['DELETE'])
+def delete_payment():
+    user_id = request.json.get('user_id')
+    data = request.json
+    if not is_valid_uuid(user_id):
+        return jsonify({'error': 'User ID must be a valid UUID'}), 400
+    payments_service = PaymentsService()
+    response, status_code = payments_service.delete_payment(data)
+    return jsonify(response), status_code
