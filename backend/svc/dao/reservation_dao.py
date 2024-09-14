@@ -1,14 +1,29 @@
+"""
+This module provides the Data Access Object (DAO) for the Reservations model, managing database interactions for field reservations.
+
+Methods:
+    - create_reservation(data): Creates a new reservation based on the provided data.
+    - get_reservations_by_user_uuid(uuid): Retrieves all reservations for a specific user by their UUID.
+    - get_reservation_by_reservation_uuid(uuid): Retrieves a specific reservation by its UUID.
+    - update_reservation_status(uuid, status): Updates the status of a reservation by its UUID.
+    - get_reservations_by_manager_id(manager_id): Retrieves reservations for fields managed by a specific manager.
+    - get_reservations_by_date(field_id, date): Retrieves all reservations for a specific field and date, excluding canceled ones.
+    - get_reservations_by_field_and_year(field_id, year): Retrieves all reservations for a field in a specific year.
+    - get_reservations_by_field_and_month(field_id, year, month): Retrieves reservations for a field during a specific month and year.
+    - get_accepted_reservations_by_field_and_date(field_id, date): Retrieves all accepted reservations for a field on a specific date.
+"""
+
 import uuid
 from models.reservations import Reservations
 from models.fields import Field
 from sqlalchemy import and_
-from flask import  jsonify
+from flask import jsonify
 from svc.db import db
 
-class ReservationDAO():
-
+class ReservationDAO:
     def create_reservation(self, data):
-        uid = str(uuid.uuid4())  # Generate a new UID
+        """Creates a new reservation based on the provided data."""
+        uid = str(uuid.uuid4())
         new_reservation = Reservations(
             id=uid,
             field_id=data['field_id'],
@@ -28,72 +43,66 @@ class ReservationDAO():
         return jsonify({'message': 'Reservation created successfully'}), 200
     
     def get_reservations_by_user_uuid(self, uuid):
-        reservations = db.session.query(Reservations).filter(Reservations.user_uuid == uuid).all()
-        return reservations
+        """Retrieves all reservations for a specific user by their UUID."""
+        return db.session.query(Reservations).filter(Reservations.user_uuid == uuid).all()
     
     def get_reservation_by_reservation_uuid(self, uuid):
-        reservations = db.session.query(Reservations).filter(Reservations.id == uuid).all()
-        return reservations
+        """Retrieves a reservation by its UUID."""
+        return db.session.query(Reservations).filter(Reservations.id == uuid).all()
     
     def update_reservation_status(self, uuid, status):
+        """Updates the status of a reservation by its UUID."""
         try:
             reservation = db.session.query(Reservations).filter(Reservations.id == uuid).first()
-
             if reservation:
                 reservation.status = status
                 db.session.commit()
                 return True
-            else:
-                return False
-        except Exception as e:
+            return False
+        except Exception:
             db.session.rollback()
             return False
         
     def get_reservations_by_manager_id(self, manager_id):
-        reservations = db.session.query(Reservations).join(Field).filter(
+        """Retrieves reservations for fields managed by a specific manager."""
+        return db.session.query(Reservations).join(Field).filter(
             Field.manager_id == manager_id,
             Reservations.field_id == Field.uid
         ).all()
-        return reservations
     
     def get_reservations_by_date(self, field_id, date):
-        reservations = Reservations.query.filter(
+        """Retrieves all reservations for a specific field and date, excluding canceled ones."""
+        return Reservations.query.filter(
             and_(
                 Reservations.field_id == field_id,
                 Reservations.date == date,
                 Reservations.status != 'canceled'
             )
         ).all()
-        return reservations
     
     def get_reservations_by_field_and_year(self, field_id, year):
-        reservations = db.session.query(Reservations).filter(
+        """Retrieves all reservations for a specific field in a given year."""
+        return db.session.query(Reservations).filter(
             and_(
                 Reservations.field_id == field_id,
                 Reservations.date.like(f'%.{year}')
             )
         ).all()
-        return reservations
 
     def get_reservations_by_field_and_month(self, field_id, year, month):
-        # Ensure month is zero-padded
+        """Retrieves reservations for a field during a specific month and year."""
         formatted_month = f'{int(month):02}.{year}'
         print(f"Querying reservations for field_id: {field_id}, month: {formatted_month}")
-        
-        # Ensure the date format in the query matches the stored date format
-        reservations = db.session.query(Reservations).filter(
+        return db.session.query(Reservations).filter(
             Reservations.field_id == field_id,
             Reservations.date.like(f'%.{formatted_month}'),
             Reservations.status == 'Accepted'
         ).all()
-        
-        print(f"Reservations fetched: {reservations}")
-        return reservations
     
     def get_accepted_reservations_by_field_and_date(self, field_id, date):
+        """Retrieves all accepted reservations for a field on a specific date."""
         return db.session.query(Reservations).filter(
             Reservations.field_id == field_id,
             Reservations.date == date,
             Reservations.status == 'Accepted'
         ).all()
-
