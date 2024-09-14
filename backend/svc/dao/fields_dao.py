@@ -1,5 +1,6 @@
 from models.fields import Field
 from models.ratings import Ratings
+from models.reservations import Reservations
 from flask import  jsonify
 from sqlalchemy import func
 from svc.db import db
@@ -85,3 +86,18 @@ class FieldDAO():
     def get_average_rating(self, field_id):
         avg_rating = db.session.query(func.avg(Ratings.rating)).filter(Ratings.field_id == field_id).scalar()
         return avg_rating if avg_rating is not None else 0
+    
+    def get_filtered_fields(self, data):
+        sportType=data['sport_type']
+        # Query the fields that match the specified sport_type
+        fields_with_reservations = db.session.query(Field).filter(Field.sport_type == sportType).all()
+        return fields_with_reservations
+    
+    def get_fields_by_sport_type_and_location(self, sport_type, location):
+        return Field.query.filter_by(sport_type=sport_type, location=location).all()
+    
+    def cancel_reservations(self, field_id):
+        reservations = db.session.query(Reservations).filter(Reservations.field_id == field_id).all()
+        for reservation in reservations:
+            reservation.status = "canceled"
+        db.session.commit()
