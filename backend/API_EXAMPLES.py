@@ -727,7 +727,7 @@ OR:
         "error": "User ID and User Longitude and User Latitude are required"
     }
 
-    api_url: http://127.0.0.1:5000/api/get_best_fields
+api_url: http://127.0.0.1:5000/api/get_best_fields
     body:
     {
     "sport_type": "Football",
@@ -816,6 +816,145 @@ Other response:
 OR:
     {
         "error": "User ID and Sport Type are required"
+    }
+
+api URL: http://127.0.0.1:5000/api/get_reservation_count_per_month_report
+body:
+    {
+        "year": "2023",
+        "manager_id": "6d3c4dc5-0951-41b1-afc7-139cc019e1a1"
+
+    }
+
+response:
+    {
+        "Marcana Shefa": {
+            "2023": {
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0,
+                "5": 0,
+                "6": 0,
+                "7": 0,
+                "8": 0,
+                "9": 0,
+                "10": 0,
+                "11": 0,
+                "12": 0
+            }
+        },
+        "adi club": {
+            "2023": {
+                "1": 1,
+                "2": 0,
+                "3": 0,
+                "4": 0,
+                "5": 0,
+                "6": 0,
+                "7": 0,
+                "8": 0,
+                "9": 4,
+                "10": 1,
+                "11": 0,
+                "12": 0
+            }
+        }
+    }
+
+Other response:
+    {
+        "error": "Manager ID must be a valid UUID"
+    }
+OR:
+    {
+        "error": "Year and Manager ID are required"
+    }
+
+
+api URL: http://127.0.0.1:5000/api/get_hourly_reservations_report
+body:
+    {
+        "date": "9.2023",
+        "manager_id": "2026a8ac-7d4d-41a2-855d-4095c13cc180"
+
+    }
+
+respoonse:
+    {
+        "09.2023": {
+            "08:00-09:00": [
+                {
+                    "count": 0,
+                    "field_name": "Marcana Shefa"
+                }
+            ],
+            "14:00-15:00": [
+                {
+                    "count": 0,
+                    "field_name": "Marcana Shefa"
+                }
+            ],
+            "14:00-16:00": [
+                {
+                    "count": 4,
+                    "field_name": "adi club"
+                },
+                {
+                    "count": 2,
+                    "field_name": "tel-aviv"
+                }
+            ],
+            "15:00-16:00": [
+                {
+                    "count": 0,
+                    "field_name": "Marcana Shefa"
+                }
+            ],
+            "16:00-18:00": [
+                {
+                    "count": 2,
+                    "field_name": "adi club"
+                },
+                {
+                    "count": 1,
+                    "field_name": "tel-aviv"
+                }
+            ],
+            "19:00-20:00": [
+                {
+                    "count": 0,
+                    "field_name": "adi club"
+                },
+                {
+                    "count": 0,
+                    "field_name": "tel-aviv"
+                }
+            ],
+            "22:00-00:00": [
+                {
+                    "count": 0,
+                    "field_name": "adi club"
+                },
+                {
+                    "count": 0,
+                    "field_name": "tel-aviv"
+                }
+            ]
+        }
+    }
+
+Other respone:
+    {
+        "message": "No fields found for the given Manager ID"
+    }
+OR:
+    {
+        "error": "Manager ID must be a valid UUID"
+    }
+OR:
+    {
+        "error": "Manager ID and date are required"
     }
 
 """

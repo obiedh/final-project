@@ -1,7 +1,7 @@
 import json
 import uuid
 from flask import Blueprint
-from flask import request, Blueprint, jsonify,send_file
+from flask import request, Blueprint, jsonify
 from svc.services.user_service import UserService
 from svc.services.fields_service import FieldService
 from svc.services.ratings_service import RatingsService
@@ -293,4 +293,36 @@ def get_best_fields():
     data = request.json
     field_service = FieldService()
     response, status_code = field_service.get_best_fields(data=data)
+    return jsonify(response), status_code
+
+@api_bp.route('/get_reservation_count_per_month_report', methods=['POST'])
+def get_reservation_report():
+    data = request.json
+    year = data.get('year')
+    manager_id = data.get('manager_id')
+    
+    if not year or not manager_id:
+        return jsonify({'error': 'Year and Manager ID are required'}), 400
+
+    if not is_valid_uuid(manager_id):
+        return jsonify({'error': 'Manager ID must be a valid UUID'}), 400
+    
+    field_service = FieldService()
+    response, status_code = field_service.get_reservation_report(manager_id,year)
+    return jsonify(response), status_code
+
+@api_bp.route('/get_hourly_reservations_report', methods=['POST'])
+def get_hourly_reservations_report():
+    data = request.json
+    manager_id = data.get('manager_id')
+    date = data.get('date')
+
+    if not manager_id or not date:
+        return jsonify({'error': 'Manager ID and date are required'}), 400
+
+    if not is_valid_uuid(manager_id):
+        return jsonify({'error': 'Manager ID must be a valid UUID'}), 400
+
+    field_service = FieldService()
+    response, status_code = field_service.get_hourly_reservations_report(manager_id, date)
     return jsonify(response), status_code
