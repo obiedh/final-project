@@ -262,3 +262,35 @@ def delete_payment():
     payments_service = PaymentsService()
     response, status_code = payments_service.delete_payment(data)
     return jsonify(response), status_code
+
+@api_bp.route('/get_filtered_fields', methods=['POST'])
+def get_filtered_fields():
+    user_id = request.json.get('user_id')
+    user_longitude = request.json.get('user_longitude')
+    user_latitude = request.json.get('user_latitude')
+    
+    if not user_id or not user_latitude or not user_longitude :
+        return jsonify({'error': 'User ID and User Longitude and User Latitude are required'}), 400
+
+    if not is_valid_uuid(user_id):
+        return jsonify({'error': 'User ID must be valid UUIDs'}), 400
+    data = request.json
+    field_service = FieldService()
+    response = field_service.get_filtered_fields(data=data)
+    return response
+
+@api_bp.route('/get_best_fields', methods=['POST'])
+def get_best_fields():
+    user_id = request.json.get('user_id')
+    sport_type = request.json.get('sport_type')
+    
+    if not user_id or not sport_type:
+        return jsonify({'error': 'Field ID and Manager ID are required'}), 400
+
+    if not is_valid_uuid(user_id):
+        return jsonify({'error': 'User ID must be valid UUIDs'}), 400
+    
+    data = request.json
+    field_service = FieldService()
+    response, status_code = field_service.get_best_fields(data=data)
+    return jsonify(response), status_code

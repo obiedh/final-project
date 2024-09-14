@@ -31,3 +31,18 @@ class Field(db.Model):
             'imageURL': self.imageURL,
             'utilities': self.utilities
         }
+    
+    @classmethod
+    def from_dict(cls, dict_obj):
+        return cls(
+            uid=dict_obj.get('uid'),
+            name=dict_obj.get('name'),
+            location=dict_obj.get('location'),
+            latitude=dict_obj.get('latitude'),
+            longitude=dict_obj.get('longitude'),
+            sport_type=dict_obj.get('sport_type'),
+            conf_interval=dict_obj.get('conf_interval'),
+            imageURL=dict_obj.get('imageURL'),
+            manager_id=dict_obj.get('manager_id'),
+            utilities=dict_obj.get('utilities')
+        )

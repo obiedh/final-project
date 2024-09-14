@@ -636,4 +636,186 @@ OR:
         "error": "User ID must be a valid UUID"
     }
 
+api_url: http://127.0.0.1:5000/api/get_filtered_fields
+body:
+    {
+        "date": "21.09.2023",
+        "start_time": "14:00",
+        "end_time": "22:00",
+        "location": "Haifa",
+        "sport_type": "Football",
+        "user_id": "a7578c2b-d2e0-4738-b09a-5eb8df1dd207",
+        "user_latitude": "32.794044",
+        "user_longitude": "34.989571"
+    }
+response:
+    [
+        {
+            "average_rating": "5.0000000000000000",
+            "conf_interval": "14:00-16:00,50 19:00-20:00,60",
+            "imageURL": "lib/images/samir_stadium.jpg",
+            "latitude": "32.8036",
+            "location": "Shefa-amr",
+            "longitude": "35.1733",
+            "manager_id": "fc328116-cc1a-4c53-81f1-9db545c40d78",
+            "name": "Shefaamr",
+            "sport_type": "tennis",
+            "total_score": 7.2947844735270895,
+            "uid": "d4734484-a896-44d9-bd87-4d2ad5412551",
+            "utilities": {
+                "Bathroom": 1,
+                "Free parking": 1,
+                "Lights": 0,
+                "Pool": 0,
+                "Sport equipment": 1
+            }
+        },
+        {
+            "average_rating": 0,
+            "conf_interval": "14:00-16:00,50 16:00-18:00,60 20:00-22:00,60",
+            "imageURL": "lib/images/samir_stadium.jpg",
+            "latitude": "32.8553",
+            "location": "Tamara",
+            "longitude": "35.1859",
+            "manager_id": "2026a8ac-7d4d-41a2-855d-4095c13cc180",
+            "name": "Tamra",
+            "sport_type": "tennis",
+            "total_score": 5.362317325672179,
+            "uid": "fe82f1ea-6d7a-4ac1-b0fc-90d5e8cea511",
+            "utilities": {
+                "Bathroom": 0,
+                "Free parking": 0,
+                "Lights": 0,
+                "Pool": 0,
+                "Sport equipment": 0
+            }
+        },
+        {
+            "average_rating": "5.0000000000000000",
+            "conf_interval": "14:00-16:00,50",
+            "imageURL": "lib/images/samir_stadium.jpg",
+            "latitude": "32.794044",
+            "location": "Haifa",
+            "longitude": "34.989571",
+            "manager_id": "679b0918-c4cb-49aa-8849-3d84f1e84298",
+            "name": "Haifa",
+            "sport_type": "tennis",
+            "total_score": 2.8877343400756312,
+            "uid": "a0d4728e-fae6-4557-a3d4-ee1d7ce8a17a",
+            "utilities": {
+                "Bathroom": 1,
+                "Free parking": 1,
+                "Lights": 1,
+                "Pool": 1,
+                "Sport equipment": 1
+            }
+        }
+    ]
+
+other response:
+    {
+        "message": "No fields found matching the criteria"
+    }
+OR:
+    []
+OR:
+    {
+        "error": "User ID must be a valid UUID"
+    }
+OR:
+    {
+        "error": "User ID and User Longitude and User Latitude are required"
+    }
+
+    api_url: http://127.0.0.1:5000/api/get_best_fields
+    body:
+    {
+    "sport_type": "Football",
+    "longitude": "35.180806",
+    "latitude": "32.798167",
+    "permission": "true",
+    "user_id": "d2ae0c5d-4c81-49e3-acf7-a929be06a616"
+    }
+Other body:
+    {
+    "sport_type": "Football",
+    "longitude": "0",
+    "latitude": "0",
+    "permission": "false",
+    "user_id": "d2ae0c5d-4c81-49e3-acf7-a929be06a616"
+    }
+
+response:
+    [
+        {
+            "average_rating": "3.6666666666666667",
+            "conf_interval": "14:00-16:00,50 19:00-20:00,60 22:00-00:00,30",
+            "imageURL": "lib/images/samir_stadium.jpg",
+            "latitude": "32.8036",
+            "location": "Shefa-amr",
+            "longitude": "35.1733",
+            "manager_id": "fc328116-cc1a-4c53-81f1-9db545c40d78",
+            "name": "Shefaamr",
+            "sport_type": "Football",
+            "total_score": 109.71377902104277,
+            "uid": "ce97b7f9-b3a1-4294-bfb6-54ac61e2d354",
+            "utilities": {
+                "Bathroom": 1,
+                "Free parking": 1,
+                "Lights": 0,
+                "Pool": 0,
+                "Sport equipment": 1
+            }
+        },
+        {
+            "average_rating": "2.3333333333333333",
+            "conf_interval": "14:00-16:00,50 16:00-18:00,60 20:00-22:00,60",
+            "imageURL": "lib/images/samir_stadium.jpg",
+            "latitude": "32.8553",
+            "location": "Tamara",
+            "longitude": "35.1859",
+            "manager_id": "2026a8ac-7d4d-41a2-855d-4095c13cc180",
+            "name": "Tamra",
+            "sport_type": "Football",
+            "total_score": 18.3454608900502,
+            "uid": "c1c8ab70-8725-4c77-8d33-16bd40a9425c",
+            "utilities": {
+                "Bathroom": 0,
+                "Free parking": 0,
+                "Lights": 0,
+                "Pool": 0,
+                "Sport equipment": 0
+            }
+        },
+        {
+            "average_rating": "4.0000000000000000",
+            "conf_interval": "14:00-16:00,50 16:00-18:00,60 18:00-20:00,30",
+            "imageURL": "lib/images/samir_stadium.jpg",
+            "latitude": "32.794044",
+            "location": "Haifa",
+            "longitude": "34.989571",
+            "manager_id": "679b0918-c4cb-49aa-8849-3d84f1e84298",
+            "name": "Haifa",
+            "sport_type": "Football",
+            "total_score": 6.917073964650308,
+            "uid": "26d1ea4e-4d20-4d0b-ba6a-78944649b90a",
+            "utilities": {
+                "Bathroom": 1,
+                "Free parking": 1,
+                "Lights": 1,
+                "Pool": 1,
+                "Sport equipment": 1
+            }
+        }
+    ]
+
+Other response:
+    {
+        "error": "User ID must be valid UUIDs"
+    }
+OR:
+    {
+        "error": "User ID and Sport Type are required"
+    }
+
 """
