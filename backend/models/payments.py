@@ -1,4 +1,4 @@
-from sqlalchemy import Column,String, ForeignKey
+from sqlalchemy import Column, ForeignKey
 from svc.db import db
 
 class Payments(db.Model):

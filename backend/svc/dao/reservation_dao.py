@@ -65,4 +65,35 @@ class ReservationDAO():
             )
         ).all()
         return reservations
+    
+    def get_reservations_by_field_and_year(self, field_id, year):
+        reservations = db.session.query(Reservations).filter(
+            and_(
+                Reservations.field_id == field_id,
+                Reservations.date.like(f'%.{year}')
+            )
+        ).all()
+        return reservations
+
+    def get_reservations_by_field_and_month(self, field_id, year, month):
+        # Ensure month is zero-padded
+        formatted_month = f'{int(month):02}.{year}'
+        print(f"Querying reservations for field_id: {field_id}, month: {formatted_month}")
+        
+        # Ensure the date format in the query matches the stored date format
+        reservations = db.session.query(Reservations).filter(
+            Reservations.field_id == field_id,
+            Reservations.date.like(f'%.{formatted_month}'),
+            Reservations.status == 'Accepted'
+        ).all()
+        
+        print(f"Reservations fetched: {reservations}")
+        return reservations
+    
+    def get_accepted_reservations_by_field_and_date(self, field_id, date):
+        return db.session.query(Reservations).filter(
+            Reservations.field_id == field_id,
+            Reservations.date == date,
+            Reservations.status == 'Accepted'
+        ).all()
 

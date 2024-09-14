@@ -236,6 +236,64 @@ class FieldService():
                     available_intervals.append(interval)
 
         return available_intervals
+
+    def get_reservation_report(self, manager_id, year):
+        fields = self.field_dao.get_fields_by_manager_id(manager_id)
+        if not fields or len(fields) == 0:
+            return {'message': 'No fields found for the given Manager ID'}, 200
+
+        report = {}
+        for field in fields:
+            field_name = field.name
+            report[field_name] = {year: {month: 0 for month in range(1, 13)}}
+            
+            reservations = self.reservation_dao.get_reservations_by_field_and_year(field.uid, year)
+            for reservation in reservations:
+                if reservation.status == 'Accepted':
+                    date_parts = reservation.date.split('.')
+                    if len(date_parts) == 3:
+                        month = int(date_parts[1])
+                        report[field_name][year][month] += 1
+        
+        return report, 200
+    
+    def get_hourly_reservations_report(self, manager_id, date):
+        month, year = date.split('.')
+        report_key = f"{int(month):02}.{year}"
+
+        fields = self.field_dao.get_fields_by_manager_id(manager_id)
+        print(f"Fields fetched for manager_id {manager_id}: {fields}")
+
+        if not fields:
+            return {'message': 'No fields found for the given Manager ID'}, 200
+
+        hourly_report = {report_key: {}}
+
+        for field in fields:
+            conf_intervals = field.conf_interval.split(' ')
+            print(f"Field: {field.name}, Conf intervals: {conf_intervals}")
+            reservations = self.reservation_dao.get_reservations_by_field_and_month(field.uid, year, month)
+            print(f"Reservations for field {field.name}: {reservations}")
+
+            for interval in conf_intervals:
+                try:
+                    time_slot, _ = interval.split(',')
+                    if time_slot not in hourly_report[report_key]:
+                        hourly_report[report_key][time_slot] = []
+
+                    count = sum(1 for reservation in reservations if reservation.interval_time == time_slot)
+                    existing_entry = next((entry for entry in hourly_report[report_key][time_slot] if entry['field_name'] == field.name), None)
+                    if existing_entry:
+                        existing_entry['count'] += count
+                    else:
+                        hourly_report[report_key][time_slot].append({'field_name': field.name, 'count': count})
+
+                except ValueError as e:
+                    print(f"Error parsing interval '{interval}': {str(e)}")
+                    continue
+
+        print(f"Hourly report generated: {hourly_report}")
+        return hourly_report, 200
     
 def degrees_to_radians(degrees):
         return degrees * (math.pi / 180.0)
