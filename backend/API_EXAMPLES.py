@@ -536,4 +536,104 @@ OR:
     {
         "message": "No reservations found for the given manager ID"
     }    
+
+api URL:  http://127.0.0.1:5000/api/create_payment
+body:
+    {
+        "carHolderID":"858888955",
+        "cardNumber":"45698712365",
+        "digitCode":"558",
+        "month": "15",
+        "name": "obied",
+        "year": "2026",
+        "userid": "fc328116-cc1a-4c53-81f1-9db545c40d78"
+    }
+
+response:
+    {
+        "message": "Payment created successfully"
+    }
+
+Other response:
+    {
+        "error": "A payment with this card number already exists"
+    }
+OR:
+    {
+        "error": "carHolderID is required"
+    }
+OR:
+    {
+        "error": "cardNumber is required"
+    }
+OR:
+    {
+        "error": "digitCode is required"
+    }
+OR:
+    {
+        "error": "month is required"
+    }
+OR:
+    {
+        "error": "year is required"
+    }
+OR:
+    {
+        "error": "name is required"
+    }
+OR:
+    {
+        "error": "User ID must be a valid UUID"
+    }
+     
+api URL:  http://127.0.0.1:5000/api/get_payment_by_id
+body:
+    {
+        "userid":"ab40d55f-0b04-46a0-9225-02beca70ecfd"
+    }
+
+    [
+        {
+            "cardNumber": "4325678914326545",
+            "name": "obied"
+        },
+        {
+            "cardNumber": "4123789654328877",
+            "name": "obied"
+        }
+    ]
+
+Other response:
+    {
+        "message": "No payments found for this user"
+    }
+OR:
+    {
+        "error": "User ID must be a valid UUID"
+    }
+
+api URL:http://127.0.0.1:5000/api/delete_payment
+body:
+    {
+        "user_id": "fc328116-cc1a-4c53-81f1-9db545c40d78",
+        "cardNumber":"412378976632845"
+    }
+response:
+    {
+        "message": "Payment deleted successfully"
+    }
+Other response:
+    {
+        "error": "Card not found"
+    }
+OR:
+    {
+        "error": "Card Number is required"
+    }
+OR:
+    {
+        "error": "User ID must be a valid UUID"
+    }
+
 """
