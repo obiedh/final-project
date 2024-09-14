@@ -1,3 +1,36 @@
+"""
+This module defines the API routes for the application, managing operations related to users, fields, reservations, payments, ratings, and more.
+
+Endpoints:
+    - /create_user [POST]: Creates a new user.
+    - /user_verification [POST]: Verifies user credentials during login.
+    - /update_preference [PUT]: Updates a user's preferences.
+    - /create_field [POST]: Creates a new sports field.
+    - /update_conf_interval [PUT]: Updates the confidence interval for a field.
+    - /update_field_details [PUT]: Updates field details like name and utilities.
+    - /delete_field [DELETE]: Deletes a field.
+    - /get_fields_by_sport_type [POST]: Retrieves fields by sport type.
+    - /get_fields_by_manager_id [POST]: Retrieves fields managed by a specific manager.
+    - /get_field_by_id [POST]: Retrieves available time slots for a field by its ID.
+    - /add_favorite [POST]: Adds a field to the user's favorites.
+    - /remove_favorite [POST]: Removes a field from the user's favorites.
+    - /get_user_favorites [POST]: Retrieves the user's favorite fields.
+    - /add_rating [POST]: Adds a rating for a field.
+    - /create_reservation [POST]: Creates a new field reservation.
+    - /get_reservation [POST]: Retrieves reservations for a specific user.
+    - /update_reservation_status [PUT]: Updates the status of a reservation.
+    - /get_reservations_by_manager [POST]: Retrieves reservations for fields managed by a specific manager.
+    - /create_payment [POST]: Creates a payment record for a user.
+    - /get_payment_by_id [POST]: Retrieves payment methods for a specific user.
+    - /delete_payment [DELETE]: Deletes a payment by card number.
+    - /get_filtered_fields [POST]: Retrieves fields based on sport type, user location, and availability.
+    - /get_best_fields [POST]: Retrieves the best sports fields based on user preferences and location.
+    - /get_reservation_count_per_month_report [POST]: Generates a reservation count report for a manager by month.
+    - /get_hourly_reservations_report [POST]: Generates an hourly reservation report for a manager.
+    
+Utility Functions:
+    - is_valid_uuid(uuid_to_test): Validates if a string is a valid UUID.
+"""
 import json
 import uuid
 from flask import Blueprint

@@ -1,6 +1,28 @@
+"""
+This module defines the Field model, representing sports fields.
+
+Attributes:
+    - uid (UUID): Primary key for the field.
+    - name (String): Name of the field.
+    - location (String): Location of the field.
+    - latitude (String): Latitude coordinates of the field.
+    - longitude (String): Longitude coordinates of the field.
+    - sport_type (String): Type of sport the field supports.
+    - conf_interval (String): Configuration intervals for available time slots.
+    - imageURL (String): URL to the image of the field.
+    - manager_id (UUID): Foreign key linking to the field's manager (user).
+    - utilities (JSON): Available utilities at the field (stored in JSON format).
+    - reservations: Relationship to the Reservations model.
+    - ratings: Relationship to the Ratings model.
+    - manager: Relationship to the User model (field manager).
+
+Methods:
+    - asdict: Converts the field object to a dictionary.
+    - from_dict: Creates a Field object from a dictionary.
+"""
+
 from svc.db import db
 from sqlalchemy.dialects.postgresql import JSON
-
 
 class Field(db.Model):
     __tablename__ = 'fields'
@@ -14,7 +36,7 @@ class Field(db.Model):
     conf_interval = db.Column(db.String, nullable=True)  
     imageURL = db.Column(db.String(100))
     manager_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey('users.uid'), nullable=False)
-    utilities = db.Column(JSON, nullable=True) 
+    utilities = db.Column(JSON, nullable=True)
 
     reservations = db.relationship('Reservations', back_populates='field')
     ratings = db.relationship('Ratings', back_populates='field')
