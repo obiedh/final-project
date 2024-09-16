@@ -3,14 +3,14 @@ This module provides the Data Access Object (DAO) for the Reservations model, ma
 
 Methods:
     - create_reservation(data): Creates a new reservation based on the provided data.
-    - get_reservations_by_user_uuid(uuid): Retrieves all reservations for a specific user by their UUID.
-    - get_reservation_by_reservation_uuid(uuid): Retrieves a specific reservation by its UUID.
-    - update_reservation_status(uuid, status): Updates the status of a reservation by its UUID.
-    - get_reservations_by_manager_id(manager_id): Retrieves reservations for fields managed by a specific manager.
-    - get_reservations_by_date(field_id, date): Retrieves all reservations for a specific field and date, excluding canceled ones.
-    - get_reservations_by_field_and_year(field_id, year): Retrieves all reservations for a field in a specific year.
-    - get_reservations_by_field_and_month(field_id, year, month): Retrieves reservations for a field during a specific month and year.
-    - get_accepted_reservations_by_field_and_date(field_id, date): Retrieves all accepted reservations for a field on a specific date.
+    - get_reservations_by_user_uuid(uuid): Retrieves all active reservations (non-deleted) for a specific user by their UUID.
+    - get_reservation_by_reservation_uuid(uuid): Retrieves a specific active reservation (non-deleted) by its UUID.
+    - update_reservation_status(uuid, status): Updates the status of an active reservation (non-deleted) by its UUID.
+    - get_reservations_by_manager_id(manager_id): Retrieves active reservations for fields managed by a specific manager.
+    - get_reservations_by_date(field_id, date): Retrieves all active reservations for a specific field and date, excluding canceled ones.
+    - get_reservations_by_field_and_year(field_id, year): Retrieves all active reservations for a field in a specific year.
+    - get_reservations_by_field_and_month(field_id, year, month): Retrieves active reservations for a field during a specific month and year.
+    - get_accepted_reservations_by_field_and_date(field_id, date): Retrieves all accepted and active reservations for a field on a specific date.
 """
 
 import uuid
@@ -44,12 +44,14 @@ class ReservationDAO:
     
     def get_reservations_by_user_uuid(self, uuid):
         """Retrieves all reservations for a specific user by their UUID."""
-        return db.session.query(Reservations).filter(Reservations.user_uuid == uuid).all()
+        reservations = db.session.query(Reservations).filter(Reservations.user_uuid == uuid, Reservations.is_deleted == False).all()
+        return reservations
     
     def get_reservation_by_reservation_uuid(self, uuid):
         """Retrieves a reservation by its UUID."""
-        return db.session.query(Reservations).filter(Reservations.id == uuid).all()
-    
+        reservations = db.session.query(Reservations).filter(Reservations.id == uuid, Reservations.is_deleted == False).all()
+        return reservations
+        
     def update_reservation_status(self, uuid, status):
         """Updates the status of a reservation by its UUID."""
         try:
@@ -65,10 +67,8 @@ class ReservationDAO:
         
     def get_reservations_by_manager_id(self, manager_id):
         """Retrieves reservations for fields managed by a specific manager."""
-        return db.session.query(Reservations).join(Field).filter(
-            Field.manager_id == manager_id,
-            Reservations.field_id == Field.uid
-        ).all()
+        reservations = db.session.query(Reservations).join(Field).filter(Field.manager_id == manager_id, Reservations.is_deleted == False).all()
+        return reservations
     
     def get_reservations_by_date(self, field_id, date):
         """Retrieves all reservations for a specific field and date, excluding canceled ones."""
@@ -82,27 +82,25 @@ class ReservationDAO:
     
     def get_reservations_by_field_and_year(self, field_id, year):
         """Retrieves all reservations for a specific field in a given year."""
-        return db.session.query(Reservations).filter(
-            and_(
-                Reservations.field_id == field_id,
-                Reservations.date.like(f'%.{year}')
-            )
-        ).all()
+        reservations = db.session.query(Reservations).filter(Reservations.field_id == field_id, Reservations.is_deleted == False, Reservations.date.like(f'%.{year}')).all()
+        return reservations
 
     def get_reservations_by_field_and_month(self, field_id, year, month):
         """Retrieves reservations for a field during a specific month and year."""
         formatted_month = f'{int(month):02}.{year}'
-        print(f"Querying reservations for field_id: {field_id}, month: {formatted_month}")
-        return db.session.query(Reservations).filter(
+        reservations = db.session.query(Reservations).filter(
             Reservations.field_id == field_id,
             Reservations.date.like(f'%.{formatted_month}'),
-            Reservations.status == 'Accepted'
+            Reservations.status == 'Accepted',
+            Reservations.is_deleted == False  # Add the is_deleted filter
         ).all()
+        return reservations
     
     def get_accepted_reservations_by_field_and_date(self, field_id, date):
         """Retrieves all accepted reservations for a field on a specific date."""
         return db.session.query(Reservations).filter(
             Reservations.field_id == field_id,
             Reservations.date == date,
-            Reservations.status == 'Accepted'
+            Reservations.status == 'Accepted',
+            Reservations.is_deleted == False  # Add the is_deleted filter
         ).all()

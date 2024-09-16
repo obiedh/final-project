@@ -78,15 +78,16 @@ class FieldService:
         return {'message': message}, 200
 
     def get_fields_by_sport_type(self, sport_type):
-        """Retrieves fields by sport type."""
         fields = self.field_dao.get_fields_by_sport_type(sport_type)
-        if not fields:
+        if not fields or len(fields) == 0:
             return {'message': 'No fields found for the given sport type'}, 200
+
         all_fields = []
         for field in fields:
-            field_dict = field.asdict()
-            field_dict['average_rating'] = self.field_dao.get_average_rating(field.uid)
-            all_fields.append(field_dict)
+            if not field.is_deleted:
+                field_dict = field.asdict()
+                field_dict['average_rating'] = self.field_dao.get_average_rating(field.uid)
+                all_fields.append(field_dict)
         return all_fields, 200
 
     def get_fields_by_manager_id(self, manager_id):

@@ -189,7 +189,7 @@ body:
 
 response:
     {
-        "message": "Field deleted successfully"
+        "message": "Field and related data marked as deleted"
     }
 
 other response:

@@ -14,13 +14,14 @@ Attributes:
     - field_name (String): Name of the field reserved.
     - location (String): Location of the reserved field.
     - imageURL (String): Image URL for the field.
+    - is_deleted (Boolean): Indicates if the reservation has been soft deleted (True if deleted).
     - field: Relationship to the Field model, representing the reserved field.
 
 Methods:
     - asdict_reservation: Returns the reservation data as a dictionary.
 """
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import Boolean, ForeignKey
 from svc.db import db
 
 class Reservations(db.Model):
@@ -37,7 +38,9 @@ class Reservations(db.Model):
     price = db.Column(db.Integer)
     field_name = db.Column(db.String(100))
     location = db.Column(db.String(100))
-    imageURL = db.Column(db.String(100)) 
+    imageURL = db.Column(db.String(100))
+    is_deleted = db.Column(Boolean, default=False)  
+
 
     field = db.relationship('Field', back_populates='reservations')
 

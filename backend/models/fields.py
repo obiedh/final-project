@@ -12,6 +12,7 @@ Attributes:
     - imageURL (String): URL to the image of the field.
     - manager_id (UUID): Foreign key linking to the field's manager (user).
     - utilities (JSON): Available utilities at the field (stored in JSON format).
+    - is_deleted (Boolean): Indicates if the field has been soft deleted (True if deleted).
     - reservations: Relationship to the Reservations model.
     - ratings: Relationship to the Ratings model.
     - manager: Relationship to the User model (field manager).
@@ -21,6 +22,7 @@ Methods:
     - from_dict: Creates a Field object from a dictionary.
 """
 
+from sqlalchemy import Boolean
 from svc.db import db
 from sqlalchemy.dialects.postgresql import JSON
 
@@ -37,6 +39,8 @@ class Field(db.Model):
     imageURL = db.Column(db.String(100))
     manager_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey('users.uid'), nullable=False)
     utilities = db.Column(JSON, nullable=True)
+    is_deleted = db.Column(Boolean, default=False) 
+
 
     reservations = db.relationship('Reservations', back_populates='field')
     ratings = db.relationship('Ratings', back_populates='field')

@@ -5,14 +5,14 @@ Methods:
     - create_field(data): Creates a new field if no field with the same name, location, and sport type exists.
     - update_conf_interval(field_id, conf_interval): Updates the confidence interval for a field.
     - update_field_details(field_id, name, utilities): Updates the details of a field such as name and utilities.
-    - get_fields_by_sport_type(sport_type): Retrieves all fields for a given sport type.
-    - delete_field(field_id, manager_id): Deletes a field if the manager owns the field.
-    - get_fields_by_manager_id(manager_id): Retrieves all fields managed by a specific manager.
-    - get_field_by_id(field_id): Retrieves a field by its ID.
-    - get_average_rating(field_id): Calculates and returns the average rating for a field.
-    - get_filtered_fields(data): Retrieves fields filtered by sport type.
-    - get_fields_by_sport_type_and_location(sport_type, location): Retrieves fields filtered by sport type and location.
-    - cancel_reservations(field_id): Cancels all reservations for a specific field.
+    - get_fields_by_sport_type(sport_type): Retrieves all non-deleted fields for a given sport type.
+    - delete_field(field_id, manager_id): Marks a field and its related reservations and ratings as deleted if the manager owns the field.
+    - get_fields_by_manager_id(manager_id): Retrieves all non-deleted fields managed by a specific manager.
+    - get_field_by_id(field_id): Retrieves a non-deleted field by its ID.
+    - get_average_rating(field_id): Calculates and returns the average rating for a field, excluding deleted ratings.
+    - get_filtered_fields(data): Retrieves fields filtered by sport type, excluding deleted fields.
+    - get_fields_by_sport_type_and_location(sport_type, location): Retrieves fields filtered by sport type and location, excluding deleted fields.
+    - cancel_reservations(field_id): Cancels all reservations for a specific field by updating their status.
 """
 
 from models.fields import Field
@@ -67,36 +67,44 @@ class FieldDAO:
 
     def get_fields_by_sport_type(self, sport_type):
         """Retrieves all fields by sport type."""
-        return db.session.query(Field).filter(Field.sport_type == sport_type).all()
-
+        fields = db.session.query(Field).filter(Field.sport_type == sport_type, Field.is_deleted == False).all()
+        return fields
+    
     def delete_field(self, field_id, manager_id):
-        """Deletes a field if it belongs to the manager with the provided manager_id."""
-        field = db.session.query(Field).filter(Field.uid == field_id).first()
+        field = db.session.query(Field).filter(Field.uid == field_id, Field.manager_id == manager_id, Field.is_deleted == False).first()
         if not field:
-            return None, "Field not found"
-        if str(field.manager_id).strip() != manager_id.strip():
-            return None, "Field does not belong to this manager"
-        db.session.delete(field)
+            return None, "Field not found or doesn't belong to this manager"
+        
+        field.is_deleted = True
         db.session.commit()
-        return field, "Field deleted successfully"
+
+        db.session.query(Reservations).filter(Reservations.field_id == field_id, Reservations.is_deleted == False).update({"is_deleted": True, "status": "canceled"})
+        db.session.commit()
+
+        db.session.query(Ratings).filter(Ratings.field_id == field_id, Ratings.is_deleted == False).update({"is_deleted": True})
+        db.session.commit()
+
+        return field, "Field and related data marked as deleted"
 
     def get_fields_by_manager_id(self, manager_id):
         """Retrieves all fields managed by the specified manager."""
-        return db.session.query(Field).filter(Field.manager_id == manager_id).all()
-
+        fields = db.session.query(Field).filter(Field.manager_id == manager_id, Field.is_deleted == False).all()
+        return fields
+    
     def get_field_by_id(self, field_id):
         """Retrieves a field by its ID."""
-        return db.session.query(Field).filter(Field.uid == field_id).first()
-
+        field = db.session.query(Field).filter(Field.uid == field_id, Field.is_deleted == False).first()
+        return field
+    
     def get_average_rating(self, field_id):
         """Calculates the average rating for a given field."""
-        avg_rating = db.session.query(func.avg(Ratings.rating)).filter(Ratings.field_id == field_id).scalar()
+        avg_rating = db.session.query(func.avg(Ratings.rating)).filter(Ratings.field_id == field_id, Ratings.is_deleted == False).scalar()
         return avg_rating if avg_rating is not None else 0
 
     def get_filtered_fields(self, data):
         """Retrieves fields filtered by sport type."""
         sportType = data['sport_type']
-        return db.session.query(Field).filter(Field.sport_type == sportType).all()
+        return db.session.query(Field).filter(Field.sport_type == sportType,  Field.is_deleted == False).all()
 
     def get_fields_by_sport_type_and_location(self, sport_type, location):
         """Retrieves fields filtered by sport type and location."""
