@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:proj/model/flagsProvider.dart';
+import 'package:SportGrounds/model/flagsProvider.dart';
 
 Flag flag = Flag(reservationFlag: false);
 

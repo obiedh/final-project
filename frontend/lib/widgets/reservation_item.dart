@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:proj/model/reservation.dart';
-import 'package:proj/widgets/stadium_item_trait.dart';
+import 'package:SportGrounds/model/reservation.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:SportGrounds/widgets/stadium_item_trait.dart';
 
-
+import '../model/enumStatus.dart';
 
 class ReservationItem extends StatelessWidget {
   const ReservationItem({super.key, required this.reservation});

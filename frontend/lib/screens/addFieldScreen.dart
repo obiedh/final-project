@@ -1,16 +1,17 @@
 import 'dart:convert';
+import 'package:SportGrounds/model/constants.dart';
+import 'package:SportGrounds/model/stadium.dart';
+import 'package:SportGrounds/providers/fieldsProvider.dart';
+import 'package:SportGrounds/providers/locationPermissionProvider.dart';
+import 'package:SportGrounds/providers/usersProvider.dart';
+import 'package:SportGrounds/screens/stadiums.dart';
+import 'package:SportGrounds/widgets/CheckBoxItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:proj/model/constants.dart';
-import 'package:proj/model/stadium.dart';
-import 'package:proj/providers/locationPermissionProvider.dart';
-import 'package:proj/providers/usersProvider.dart';
-import 'package:proj/widgets/CheckBoxItem.dart';
-
+import 'package:geocoding/geocoding.dart';
 
 class AddFieldScreen extends ConsumerStatefulWidget {
   const AddFieldScreen({super.key, required this.stadium});
@@ -154,7 +155,7 @@ class _AddFieldScreenState extends ConsumerState<AddFieldScreen> {
     final requestUrl =
         Uri.https("maps.googleapis.com", "/maps/api/place/autocomplete/json", {
       "input": input,
-      "key": kGoogleApiKey,
+      "key": GooglePlacesApiKey,
       "components": "country:il",
     });
 
@@ -169,6 +170,7 @@ class _AddFieldScreenState extends ConsumerState<AddFieldScreen> {
                 .toList();
           });
         } else {
+          print("PLACES API");
           print("Error from API: ${json['status']}");
         }
       } else {
@@ -181,11 +183,10 @@ class _AddFieldScreenState extends ConsumerState<AddFieldScreen> {
   }
 
   Future<void> _getPlaceDetails(String placeId) async {
-    final apiKey = "AIzaSyD9fiODgq_4Qgwh25uEB1ON5ywYxI1Gbuw";
     final requestUrl =
         Uri.https("maps.googleapis.com", "/maps/api/place/details/json", {
       "place_id": placeId,
-      "key": apiKey,
+      "key": GoogleMapsApiKey,
     });
 
     try {
@@ -216,6 +217,7 @@ class _AddFieldScreenState extends ConsumerState<AddFieldScreen> {
             }
           });
         } else {
+          print("MAPS");
           print("Error from API: ${json['status']}");
         }
       } else {

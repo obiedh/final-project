@@ -1,20 +1,20 @@
-
+import 'package:SportGrounds/screens/SettingsScreen.dart';
+import 'package:SportGrounds/screens/manager_screen.dart';
+import 'package:SportGrounds/screens/reports_Screen.dart';
+import 'package:SportGrounds/screens/reservationManager_screen.dart';
+import 'package:SportGrounds/screens/userPrefrences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:proj/providers/favoritesProvider.dart';
-import 'package:proj/providers/reservationCancelFlag.dart';
-import 'package:proj/providers/usersProvider.dart';
-import 'package:proj/screens/auth.dart';
-import 'package:proj/screens/favorites_screen.dart';
-import 'package:proj/screens/manager_screen.dart';
-import 'package:proj/screens/profile_screen.dart';
-import 'package:proj/screens/reports_Screen.dart';
-import 'package:proj/screens/reservationManager_screen.dart';
-import 'package:proj/screens/reservationsScreen.dart';
-import 'package:proj/screens/sports_categories.dart';
-import 'package:proj/screens/userPrefrences.dart';
-import 'package:proj/widgets/main_drawer.dart';
+import 'package:SportGrounds/providers/favoritesProvider.dart';
+import 'package:SportGrounds/providers/reservationCancelFlag.dart';
+import 'package:SportGrounds/screens/profile_screen.dart';
+import 'package:SportGrounds/screens/reservationsScreen.dart';
+import 'package:SportGrounds/screens/sports_categories.dart';
+import 'package:SportGrounds/widgets/main_drawer.dart';
+import 'package:SportGrounds/screens/auth.dart';
+import 'package:SportGrounds/providers/usersProvider.dart';
 
+import 'favorites_screen.dart';
 
 class MainPageScreen extends ConsumerStatefulWidget {
   const MainPageScreen({super.key});
@@ -49,7 +49,7 @@ class _MainPagaeScreenState extends ConsumerState<MainPageScreen> {
     }
     if (p == "User Prefrence") {
       Navigator.of(context).push(MaterialPageRoute(
-        builder: (ctx) => const UserPrefrenceScreen(),
+        builder: (ctx) => const UserPreferenceScreen(),
       ));
     }
   }
@@ -93,7 +93,7 @@ class _MainPagaeScreenState extends ConsumerState<MainPageScreen> {
       final favoriteStadiums = ref.watch(favoriteStadiumsProvider);
       activePage =
           ref.read(userSingletonProvider).authenticationVar != 'manager'
-              ? const FavoritesScreen()
+              ? FavoritesScreen()
               : const ReservationScreenManager();
       activePageTitle =
           ref.read(userSingletonProvider).authenticationVar == 'manager'
@@ -107,11 +107,11 @@ class _MainPagaeScreenState extends ConsumerState<MainPageScreen> {
               : 'My Games';
       activePage =
           ref.read(userSingletonProvider).authenticationVar == 'manager'
-              ? const ReportsScreen()
+              ? ReportsScreen()
               : const ReservationScreenEbra();
     }
     if (_selectedPageIndex == 3) {
-      activePage =  ProfileScreen();
+      activePage = const ProfileScreen();
       activePageTitle = 'My Profile';
     }
 
