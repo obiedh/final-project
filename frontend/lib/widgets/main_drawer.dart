@@ -74,11 +74,13 @@ class MainDrawer extends ConsumerWidget {
             title: Text(
               authenticationVar == "" ? 'Sign In' : "Sign out",
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: Theme.of(context).colorScheme.onBackground,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 24,
                   ),
             ),
             onTap: () async {
+              print(authenticationVar);
+              print (ref.read(userSingletonProvider).sso);
               if (authenticationVar != "" &&
                   ref.read(userSingletonProvider).sso!) {
                 await GoogleSigninApi.logout();
@@ -120,12 +122,12 @@ class MainDrawer extends ConsumerWidget {
                       ? Icon(
                           Icons.payment,
                           size: 26,
-                          color: Theme.of(context).colorScheme.onBackground,
+                          color: Theme.of(context).colorScheme.onSurface,
                         )
                       : Icon(
                           Icons.stadium,
                           size: 26,
-                          color: Theme.of(context).colorScheme.onBackground,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                   title: ref.read(userSingletonProvider).authenticationVar !=
                           "manager"
@@ -136,7 +138,7 @@ class MainDrawer extends ConsumerWidget {
                               .titleSmall!
                               .copyWith(
                                 color:
-                                    Theme.of(context).colorScheme.onBackground,
+                                    Theme.of(context).colorScheme.onSurface,
                                 fontSize: 24,
                               ),
                         )
@@ -190,12 +192,12 @@ class MainDrawer extends ConsumerWidget {
                   leading: Icon(
                     Icons.supervised_user_circle_outlined,
                     size: 26,
-                    color: Theme.of(context).colorScheme.onBackground,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                   title: Text(
                     'User Prefrence',
                     style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                          color: Theme.of(context).colorScheme.onBackground,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontSize: 24,
                         ),
                   ),
