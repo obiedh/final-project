@@ -1,13 +1,18 @@
 import 'dart:convert';
-import 'dart:math';
+
+import 'package:SportGrounds/providers/fieldsProvider.dart';
+import 'package:SportGrounds/providers/usersProvider.dart';
+import 'package:SportGrounds/widgets/reservation_item.dart';
+import 'package:SportGrounds/widgets/stadium_item.dart';
+import 'package:SportGrounds/widgets/stadium_item_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:proj/providers/fieldsProvider.dart';
-import 'package:proj/providers/usersProvider.dart';
-import 'package:proj/widgets/stadium_item_manager.dart';
+import 'package:SportGrounds/model/category.dart';
+import 'package:SportGrounds/widgets/category_grid_item.dart';
 import '../model/constants.dart';
 import '../model/stadium.dart';
 import '../providers/locationPermissionProvider.dart';
+import 'Stadiums.dart';
 import 'package:http/http.dart' as http;
 
 class ManagerScreen extends ConsumerStatefulWidget {
@@ -28,30 +33,6 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
     super.initState();
     _loadFields();
   }
-
-  double _degreesToRadians(double degrees) {
-  return degrees * (pi / 180.0);
-}
-
-  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-  const double earthRadius = 6371.0; // Earth radius in kilometers
-
-  // Convert latitude and longitude from degrees to radians
-  lat1 = _degreesToRadians(lat1);
-  lon1 = _degreesToRadians(lon1);
-  lat2 = _degreesToRadians(lat2);
-  lon2 = _degreesToRadians(lon2);
-
-  // Haversine formula
-  double dLat = lat2 - lat1;
-  double dLon = lon2 - lon1;
-  double a = sin(dLat / 2) * sin(dLat / 2) +
-      cos(lat1) * cos(lat2) * sin(dLon / 2) * sin(dLon / 2);
-  double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-  double distance = earthRadius * c;
-
-  return distance; // Distance in kilometers
-}
 
   Future<void> _loadFields() async {
     print("entered here");

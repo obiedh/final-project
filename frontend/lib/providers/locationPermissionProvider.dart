@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:proj/model/permissions.dart';
+import 'package:SportGrounds/model/permissions.dart';
 
 Permissions permission = Permissions(permission: false);
 
