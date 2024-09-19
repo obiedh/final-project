@@ -1,5 +1,5 @@
+import 'package:SportGrounds/model/stadium.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:proj/model/stadium.dart';
 
 List<Stadium> stadiums = [];
 

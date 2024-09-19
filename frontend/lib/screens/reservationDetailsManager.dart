@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:SportGrounds/model/constants.dart';
+import 'package:SportGrounds/model/reservation.dart';
+import 'package:SportGrounds/providers/confirmOrderProvider.dart';
 import 'package:http/http.dart' as http;
-import 'package:proj/model/constants.dart';
-import 'package:proj/model/reservation.dart';
-import 'package:proj/providers/reservationCancelFlag.dart';
-
+import 'package:SportGrounds/providers/reservationCancelFlag.dart';
 
 class ReservationDetailsManagerScreen extends ConsumerStatefulWidget {
   const ReservationDetailsManagerScreen({

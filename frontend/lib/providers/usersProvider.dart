@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:proj/model/users.dart';
+import 'package:SportGrounds/model/users.dart';
 
 Users serverer = Users(
   id: "",
@@ -8,6 +8,7 @@ Users serverer = Users(
   authenticationVar: "",
   password: "",
   preferences: "",
+  sso: false,
 );
 
 class UserSingletonNotifier extends StateNotifier<Users> {
@@ -34,7 +35,8 @@ class UserSingletonNotifier extends StateNotifier<Users> {
     return "piere";
   }
 
-  void AuthSucceed(String email, String id, String userType, String preference) {
+  void AuthSucceed(
+      String email, String id, String userType, String preference, bool sso) {
     print("what!!!");
     state = Users(
       authenticationVar: userType,
@@ -42,7 +44,8 @@ class UserSingletonNotifier extends StateNotifier<Users> {
       phoneNumber: serverer.phoneNumber,
       id: id,
       password: serverer.password,
-      preferences: preference
+      preferences: preference,
+      sso: sso,
     );
   }
 
@@ -53,6 +56,7 @@ class UserSingletonNotifier extends StateNotifier<Users> {
       phoneNumber: "",
       id: "",
       password: "",
+      preferences: "",
     );
   }
 
@@ -63,15 +67,20 @@ class UserSingletonNotifier extends StateNotifier<Users> {
       id: "",
       password: "",
       phoneNumber: "",
+      preferences: "",
     );
   }
 
-  /*void addPlace(String title, File image)
-  {
-    final newPlace = Place(title: title,image: image);
-    state = [newPlace,...state];
-
-  }*/
+  void updatePreferences(String newPreferences) {
+    state = Users(
+      authenticationVar: state.authenticationVar,
+      name: state.name,
+      phoneNumber: state.phoneNumber,
+      id: state.id,
+      password: state.password,
+      preferences: newPreferences,
+    );
+  }
 }
 
 final userSingletonProvider =

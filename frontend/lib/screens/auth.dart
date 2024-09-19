@@ -2,13 +2,17 @@
 
 import 'dart:convert';
 import 'dart:math';
+
+import 'package:SportGrounds/api/google_signin_api.dart';
+import 'package:SportGrounds/model/stadium.dart';
+import 'package:SportGrounds/providers/favoritesProvider.dart';
+import 'package:SportGrounds/providers/locationPermissionProvider.dart';
+import 'package:SportGrounds/screens/logged_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:SportGrounds/providers/usersProvider.dart';
 import 'package:http/http.dart' as http;
-import 'package:proj/model/stadium.dart';
-import 'package:proj/providers/favoritesProvider.dart';
-import 'package:proj/providers/locationPermissionProvider.dart';
-import 'package:proj/providers/usersProvider.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../model/constants.dart';
 
@@ -19,7 +23,6 @@ class AuthScreen extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<AuthScreen> createState() {
-    // TODO: implement createState
     return _AuthScreenState();
   }
 }
@@ -33,7 +36,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   var _enteredPhoneNumber = "";
   var _twoAuthCode = "";
   var _error;
-  String _errorMEssage = "";
   var _userPrefrences = "";
   var _isLoading = false;
   var _isLoading_checkAuth = false;
@@ -42,8 +44,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   var uuid = "";
   var userType = "";
   bool _connectionLost = false;
+  String _errorMEssage = "";
   String preferencesString = "";
   List<Stadium> _favoritesStadiums = [];
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    serverClientId:
+        '630533245227-f7rj997qs8075alurbhbg3c79vaci4p1.apps.googleusercontent.com',
+  );
 
   String generatePreferencesString(bool hasBathroom, bool hasPool,
       bool hasLights, bool hasFreeParking, bool hasFreeEquipment) {
@@ -72,6 +79,38 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     double distance = earthRadius * c;
 
     return distance; // Distance in kilometers
+  }
+
+  Future<void> googleSignIn(BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final user = await GoogleSigninApi.login();
+
+    if (user == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Sign in failed')));
+    } else {
+      setState(() {
+        ref
+            .read(userSingletonProvider.notifier)
+            .AuthSucceed(user.displayName!, user.id, "regular", "", true);
+        Navigator.pop(context, "signedIn");
+      });
+      print("user");
+      print(user.id);
+
+      /*Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => LoggedInPage(user: user),
+        ),
+      );*/
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<bool?> _getFavorites() async {
@@ -253,7 +292,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                       setState(() {
                                         //  _form.currentState?.validate();
                                       });
-                                      // ignore: use_build_context_synchronously
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         const SnackBar(
@@ -275,7 +313,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                       ref
                                           .read(userSingletonProvider.notifier)
                                           .AuthSucceed(_enteredEmail, uuid,
-                                              userType, _userPrefrences);
+                                              userType, _userPrefrences, false);
 
                                       setState(() {
                                         _isLoading = true;
@@ -298,10 +336,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                       if (!auth_success && isValid) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                           SnackBar(
-                                            content: Text(
-                                                _errorMEssage),
-                                            duration: const Duration(seconds: 3),
+                                          SnackBar(
+                                            content: Text(_errorMEssage),
+                                            duration:
+                                                const Duration(seconds: 3),
                                           ),
                                         );
                                       }
@@ -330,6 +368,28 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                     ? 'Create an account'
                                     : 'I already have an account'),
                               ),
+                              Row(
+                                children: [
+                                  const SizedBox(height: 20),
+                                  Container(
+                                    padding: EdgeInsets.only(left: 45),
+                                    child: ElevatedButton(
+                                        onPressed: () => googleSignIn(context),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                              height: 60,
+                                              child: Image.asset(
+                                                  'lib/images/google_logo.png'),
+                                            ),
+                                            Text('Sign in with google'),
+                                          ],
+                                        )),
+                                  ),
+                                ],
+                              )
                             ],
                           ),
                         ),
@@ -509,45 +569,31 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         _errorMEssage = "Connection Error";
         return false;
       } else {
-
-      if(response.statusCode ==401){
+        if (response.statusCode == 401) {
           _errorMEssage = "Wrong Credentials";
           return false;
         }
-
-        else{
-
-            if(response.statusCode!=200){
-              _errorMEssage = "Connection Faliur";
-              return false; 
-            }
-
-        }
-       
       }
-        if(response.statusCode ==200) {
-        
+      if (response.statusCode != 200) {
+        _errorMEssage = "Connection Faliure";
+        return false;
+      } else {
         setState(() {
           final Map<String, dynamic> listData = json.decode(response.body);
           uuid = listData['userid'];
           userType = listData['user_type'];
-          _userPrefrences = listData['preferences'];
-          ref
-              .read(userSingletonProvider.notifier)
-              .AuthSucceed(_enteredEmail, uuid, userType, _userPrefrences);
-
-       });
+          _userPrefrences = listData['preferences'] ?? "prefrence";
+          ref.read(userSingletonProvider.notifier).AuthSucceed(
+              _enteredEmail, uuid, userType, _userPrefrences, false);
+        });
         print(_userPrefrences);
         return true;
-
-        }
-      
+      }
     } catch (error) {
-      _errorMEssage= "Connection Faliure, try again later!";
-
+      print(error);
+      _errorMEssage = "Connection Faliure, try again later!";
+      return false;
     }
-
-    return true;
   }
 
   Future<bool> _showPopup(BuildContext context) async {

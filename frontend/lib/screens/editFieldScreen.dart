@@ -1,12 +1,11 @@
 import 'dart:convert';
+import 'package:SportGrounds/providers/fieldsProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
-import 'package:proj/model/constants.dart';
-import 'package:proj/model/stadium.dart';
-import 'package:proj/providers/fieldsProvider.dart';
-import 'package:proj/widgets/CheckBoxItem.dart';
-
+import 'package:SportGrounds/model/constants.dart';
+import 'package:SportGrounds/model/stadium.dart';
+import 'package:SportGrounds/widgets/CheckBoxItem.dart';
 
 class EditFieldScreen extends ConsumerStatefulWidget {
   const EditFieldScreen({super.key, required this.stadium});

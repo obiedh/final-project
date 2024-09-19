@@ -1,9 +1,9 @@
 import 'package:geolocator/geolocator.dart';
+import 'package:SportGrounds/providers/locationPermissionProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:SportGrounds/screens/main_page.dart';
 import 'package:go_router/go_router.dart';
-import 'package:proj/providers/locationPermissionProvider.dart';
-import 'package:proj/screens/main_page.dart';
 
 final GoRouter router = GoRouter(routes: [
   GoRoute(
@@ -57,43 +57,55 @@ class _AppScreenState extends ConsumerState<App> {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        throw Exception('Location services are disabled');
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          throw Exception('Location Permissions are denied');
-        }
         ref
             .read(locationPermissionProvider.notifier)
-            .addedPermission(true, 0.0, 0.0);
+            .addedPermission(false, 0.0, 0.0);
+        throw Exception('Location services are disabled');
+      } else {
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            ref
+                .read(locationPermissionProvider.notifier)
+                .addedPermission(false, 0.0, 0.0);
+            throw Exception('Location Permissions are denied');
+          }
+          ref
+              .read(locationPermissionProvider.notifier)
+              .addedPermission(false, 0.0, 0.0);
+        }
       }
 
       if (permission == LocationPermission.deniedForever) {
+        ref
+            .read(locationPermissionProvider.notifier)
+            .addedPermission(false, 0.0, 0.0);
         throw Exception(
             'Location permissions are permanently denied, we cannot request');
+      } else {
+        setState(() {
+          _isGettingLocation = true;
+        });
+
+        Position position = await Geolocator.getCurrentPosition();
+
+        setState(() {
+          _isGettingLocation = false;
+        });
+
+        // Process the obtained position here
+        ref
+            .read(locationPermissionProvider.notifier)
+            .addedPermission(true, position.longitude, position.latitude);
       }
-
-      setState(() {
-        _isGettingLocation = true;
-      });
-
-      Position position = await Geolocator.getCurrentPosition();
-
-      setState(() {
-        _isGettingLocation = false;
-      });
-
-      // Process the obtained position here
-      ref
-          .read(locationPermissionProvider.notifier)
-          .addedPermission(true, position.longitude, position.latitude);
     } catch (e) {
       print('Error getting location: $e');
       // Handle the error appropriately
     }
+    setState(() {
+      _isGettingLocation = false;
+    });
     return null;
   }
 

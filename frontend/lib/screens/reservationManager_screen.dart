@@ -1,14 +1,16 @@
 import 'dart:convert';
+
+import 'package:SportGrounds/screens/reservationDetailsManager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:SportGrounds/model/constants.dart';
+import 'package:SportGrounds/model/reservation.dart';
+import 'package:SportGrounds/providers/usersProvider.dart';
+import 'package:SportGrounds/screens/reservationDetails.dart';
+import 'package:SportGrounds/screens/reservation_screen.dart';
 import 'package:http/http.dart' as http;
-import 'package:proj/model/constants.dart';
-import 'package:proj/model/reservation.dart';
-import 'package:proj/providers/usersProvider.dart';
-import 'package:proj/screens/reservationDetailsManager.dart';
-import 'package:proj/widgets/reservation_item.dart';
-
+import '../widgets/reservation_item.dart';
 
 class ReservationScreenManager extends ConsumerStatefulWidget {
   const ReservationScreenManager({super.key});
@@ -146,7 +148,7 @@ class _ReservationScreenManagerState
                     itemBuilder: (ctx, index) {
                       return InkWell(
                         onTap: () {
-                          /*setState(() {
+                          setState(() {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (ctx) => ReservationScreen(
@@ -154,7 +156,7 @@ class _ReservationScreenManagerState
                                 ),
                               ),
                             );
-                          });*/
+                          });
                         },
                         child: ReservationItem(
                           reservation: approvedReservations[index],

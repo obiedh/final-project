@@ -1,12 +1,13 @@
-
+import 'package:SportGrounds/api/google_signin_api.dart';
+import 'package:SportGrounds/model/stadium.dart';
+import 'package:SportGrounds/providers/favoritesProvider.dart';
+import 'package:SportGrounds/providers/fieldsProvider.dart';
+import 'package:SportGrounds/screens/addFieldScreen.dart';
+import 'package:SportGrounds/screens/editFieldScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:proj/model/stadium.dart';
-import 'package:proj/providers/favoritesProvider.dart';
-import 'package:proj/providers/usersProvider.dart';
-import 'package:proj/screens/addFieldScreen.dart';
-import 'package:proj/screens/creditCard.dart';
-
+import 'package:SportGrounds/providers/usersProvider.dart';
+import 'package:SportGrounds/screens/creditCard.dart';
 
 class MainDrawer extends ConsumerWidget {
   const MainDrawer({super.key, required this.onSelectScreen});
@@ -15,7 +16,7 @@ class MainDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-  const  Stadium stadium = Stadium(
+    Stadium stadium = Stadium(
       id: "2",
       title: "2",
       location: "2",
@@ -53,11 +54,13 @@ class MainDrawer extends ConsumerWidget {
                 const SizedBox(
                   width: 18,
                 ),
-                Text(
-                  'Welcome!  ${authenticationVar == "" ? "" : Username}',
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+                Expanded(
+                  child: Text(
+                    'Welcome!  ${authenticationVar == "" ? "" : Username}',
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                  ),
                 )
               ],
             ),
@@ -75,9 +78,20 @@ class MainDrawer extends ConsumerWidget {
                     fontSize: 24,
                   ),
             ),
-            onTap: () {
-              // Clear the favorite stadiums when signing out
-              ref.read(favoriteStadiumsProvider.notifier).clearFavorites();
+            onTap: () async {
+              if (authenticationVar != "" &&
+                  ref.read(userSingletonProvider).sso!) {
+                await GoogleSigninApi.logout();
+                ref.read(favoriteStadiumsProvider.notifier).clearFavorites();
+                ref.read(stadiumListProvider.notifier).clearStadiums();
+              } else {
+                if (authenticationVar != "" &&
+                    ref.read(userSingletonProvider).sso == false) {
+                  ref.read(favoriteStadiumsProvider.notifier).clearFavorites();
+                  ref.read(stadiumListProvider.notifier).clearStadiums();
+                }
+              }
+
               onSelectScreen(authenticationVar == "" ? 'Sign In' : "Sign out");
             },
           ),
@@ -137,32 +151,39 @@ class MainDrawer extends ConsumerWidget {
                                 fontSize: 24,
                               ),
                         ),
-                  onTap: () {
-                    ref.read(userSingletonProvider).authenticationVar !=
-                            "manager"
-                        ? Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (ctx) => const CreditCardScreen(),
+                  onTap: () async {
+                    if (ref.read(userSingletonProvider).authenticationVar !=
+                        "manager") {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (ctx) => const CreditCardScreen(),
+                        ),
+                      );
+                    } else {
+                      final newStadium = await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (ctx) => const AddFieldScreen(
+                            stadium: Stadium(
+                              id: "22",
+                              title: "22",
+                              location: "22",
+                              imagePath: "22",
+                              latitude: 45,
+                              longitude: 4,
+                              type: "22",
+                              rating: '5',
                             ),
-                          )
-                        : Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (ctx) => const AddFieldScreen(
-                                stadium: Stadium(
-                                  id: "22",
-                                  title: "22",
-                                  location: "22",
-                                  imagePath: "22",
-                                  latitude: 45,
-                                  longitude: 4,
-                                  type: "22",
-                                  rating: '5',
-                                ),
-                              ),
-                            ),
-                          );
-                  },
-                ),
+                          ),
+                        ),
+                      );
+
+                      if (newStadium != null) {
+                        ref
+                            .read(stadiumListProvider.notifier)
+                            .addStadium(newStadium);
+                      }
+                    }
+                  }),
           ref.read(userSingletonProvider).authenticationVar != "" &&
                   ref.read(userSingletonProvider).authenticationVar != "manager"
               ? ListTile(
