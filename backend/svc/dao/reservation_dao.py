@@ -87,7 +87,7 @@ class ReservationDAO:
 
     def get_reservations_by_field_and_month(self, field_id, year, month):
         """Retrieves reservations for a field during a specific month and year."""
-        formatted_month = f'{int(month):02}.{year}'
+        formatted_month = f'{month}.{year}'
         reservations = db.session.query(Reservations).filter(
             Reservations.field_id == field_id,
             Reservations.date.like(f'%.{formatted_month}'),

@@ -34,4 +34,4 @@ class UserDAO:
         user = db.session.query(User).filter(User.username == user_name).first() 
         user.preference = preference
         db.session.commit()
-        return "Preference updated successfully"
+        return "Preference updated successfully", 200

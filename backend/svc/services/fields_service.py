@@ -191,9 +191,9 @@ class FieldService:
                 try:
                     time_slot, _ = interval.split(',')
                     if time_slot not in hourly_report[f"{int(month):02}.{year}"]:
-                        hourly_report[f"{int(month):02}.{year}"][time_slot] = []
+                        hourly_report[f"{month}.{year}"][time_slot] = []
                     count = sum(1 for reservation in reservations if reservation.interval_time == time_slot)
-                    existing_entry = next((entry for entry in hourly_report[f"{int(month):02}.{year}"][time_slot] if entry['field_name'] == field.name), None)
+                    existing_entry = next((entry for entry in hourly_report[f"{month}.{year}"][time_slot] if entry['field_name'] == field.name), None)
                     if existing_entry:
                         existing_entry['count'] += count
                     else:
