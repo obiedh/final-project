@@ -578,6 +578,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         _errorMEssage = "Connection Faliure";
         return false;
       } else {
+        setState(() {
+          final Map<String, dynamic> listData = json.decode(response.body);
+          uuid = listData['userid'];
+          userType = listData['user_type'];
+          _userPrefrences = listData['preferences'] ?? "prefrence";
         print("hiii");
 
        setState(() {
@@ -593,6 +598,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
     } catch (error) {
       print(error);
+      _errorMEssage = "Connection Faliure, try again later!";
+      return false;
+
       return true;
     }
   }
