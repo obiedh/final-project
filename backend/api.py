@@ -1,11 +1,45 @@
+"""
+This module defines the API routes for the application, managing operations related to users, fields, reservations, payments, ratings, and more.
+
+Endpoints:
+    - /create_user [POST]: Creates a new user.
+    - /user_verification [POST]: Verifies user credentials during login.
+    - /update_preference [PUT]: Updates a user's preferences.
+    - /create_field [POST]: Creates a new sports field.
+    - /update_conf_interval [PUT]: Updates the confidence interval for a field.
+    - /update_field_details [PUT]: Updates field details like name and utilities.
+    - /delete_field [DELETE]: Deletes a field.
+    - /get_fields_by_sport_type [POST]: Retrieves fields by sport type.
+    - /get_fields_by_manager_id [POST]: Retrieves fields managed by a specific manager.
+    - /get_field_by_id [POST]: Retrieves available time slots for a field by its ID.
+    - /add_favorite [POST]: Adds a field to the user's favorites.
+    - /remove_favorite [POST]: Removes a field from the user's favorites.
+    - /get_user_favorites [POST]: Retrieves the user's favorite fields.
+    - /add_rating [POST]: Adds a rating for a field.
+    - /create_reservation [POST]: Creates a new field reservation.
+    - /get_reservation [POST]: Retrieves reservations for a specific user.
+    - /update_reservation_status [PUT]: Updates the status of a reservation.
+    - /get_reservations_by_manager [POST]: Retrieves reservations for fields managed by a specific manager.
+    - /create_payment [POST]: Creates a payment record for a user.
+    - /get_payment_by_id [POST]: Retrieves payment methods for a specific user.
+    - /delete_payment [DELETE]: Deletes a payment by card number.
+    - /get_filtered_fields [POST]: Retrieves fields based on sport type, user location, and availability.
+    - /get_best_fields [POST]: Retrieves the best sports fields based on user preferences and location.
+    - /get_reservation_count_per_month_report [POST]: Generates a reservation count report for a manager by month.
+    - /get_hourly_reservations_report [POST]: Generates an hourly reservation report for a manager.
+    
+Utility Functions:
+    - is_valid_uuid(uuid_to_test): Validates if a string is a valid UUID.
+"""
 import json
 import uuid
 from flask import Blueprint
-from flask import request, Blueprint, jsonify,send_file
+from flask import request, Blueprint, jsonify
 from svc.services.user_service import UserService
 from svc.services.fields_service import FieldService
 from svc.services.ratings_service import RatingsService
 from svc.services.reservation_service import ReservationService
+from svc.services.payments_service import PaymentsService
 
 #API EXAMPLES ARE INSIDE THE FILE API_EXAMPLES.
 
@@ -124,6 +158,14 @@ def get_fields_by_manager_id():
     fields, status_code = field_service.get_fields_by_manager_id(manager_id)
     return jsonify(fields), status_code
 
+@api_bp.route('/get_field_by_id', methods=['POST'])
+def get_football_field_by_id():
+    data = request.json
+    field_service = FieldService()
+    response = field_service.get_available_time_slots(data=data)
+    print(response)
+    return response
+
 @api_bp.route('/add_favorite', methods=['POST'])
 def add_favorite():
     data = request.json
@@ -224,3 +266,96 @@ def get_reservations_by_manager():
     reservation_service = ReservationService()
     reservations, status_code = reservation_service.get_reservations_by_manager(manager_id)
     return jsonify(reservations), status_code
+
+@api_bp.route('/create_payment', methods=['POST'])
+def create_payment():
+    data = request.json
+    user_id = data.get('userid')
+    if not is_valid_uuid(user_id):
+        return jsonify({'error': 'User ID must be a valid UUID'}), 400
+    payments_service = PaymentsService()
+    response, status_code = payments_service.create_payments(data=data)
+    return jsonify(response), status_code
+
+@api_bp.route('/get_payment_by_id', methods=['POST'])
+def get_payment_by_id():
+    user_id = request.json.get('userid')
+    if not is_valid_uuid(user_id):
+        return jsonify({'error': 'User ID must be a valid UUID'}), 400
+    payments_service = PaymentsService()
+    response, status_code = payments_service.get_payment(user_id)
+    return jsonify(response), status_code
+
+@api_bp.route('/delete_payment', methods=['DELETE'])
+def delete_payment():
+    user_id = request.json.get('user_id')
+    data = request.json
+    if not is_valid_uuid(user_id):
+        return jsonify({'error': 'User ID must be a valid UUID'}), 400
+    payments_service = PaymentsService()
+    response, status_code = payments_service.delete_payment(data)
+    return jsonify(response), status_code
+
+@api_bp.route('/get_filtered_fields', methods=['POST'])
+def get_filtered_fields():
+    user_id = request.json.get('user_id')
+    user_longitude = request.json.get('user_longitude')
+    user_latitude = request.json.get('user_latitude')
+    
+    if not user_id or not user_latitude or not user_longitude :
+        return jsonify({'error': 'User ID and User Longitude and User Latitude are required'}), 400
+
+    if not is_valid_uuid(user_id):
+        return jsonify({'error': 'User ID must be valid UUIDs'}), 400
+    data = request.json
+    field_service = FieldService()
+    response = field_service.get_filtered_fields(data=data)
+    return response
+
+@api_bp.route('/get_best_fields', methods=['POST'])
+def get_best_fields():
+    user_id = request.json.get('user_id')
+    sport_type = request.json.get('sport_type')
+    
+    if not user_id or not sport_type:
+        return jsonify({'error': 'Field ID and Manager ID are required'}), 400
+
+    if not is_valid_uuid(user_id):
+        return jsonify({'error': 'User ID must be valid UUIDs'}), 400
+    
+    data = request.json
+    field_service = FieldService()
+    response, status_code = field_service.get_best_fields(data=data)
+    return jsonify(response), status_code
+
+@api_bp.route('/get_reservation_count_per_month_report', methods=['POST'])
+def get_reservation_report():
+    data = request.json
+    year = data.get('year')
+    manager_id = data.get('manager_id')
+    
+    if not year or not manager_id:
+        return jsonify({'error': 'Year and Manager ID are required'}), 400
+
+    if not is_valid_uuid(manager_id):
+        return jsonify({'error': 'Manager ID must be a valid UUID'}), 400
+    
+    field_service = FieldService()
+    response, status_code = field_service.get_reservation_report(manager_id,year)
+    return jsonify(response), status_code
+
+@api_bp.route('/get_hourly_reservations_report', methods=['POST'])
+def get_hourly_reservations_report():
+    data = request.json
+    manager_id = data.get('manager_id')
+    date = data.get('date')
+
+    if not manager_id or not date:
+        return jsonify({'error': 'Manager ID and date are required'}), 400
+
+    if not is_valid_uuid(manager_id):
+        return jsonify({'error': 'Manager ID must be a valid UUID'}), 400
+
+    field_service = FieldService()
+    response, status_code = field_service.get_hourly_reservations_report(manager_id, date)
+    return jsonify(response), status_code

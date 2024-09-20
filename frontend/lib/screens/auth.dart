@@ -583,6 +583,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           uuid = listData['userid'];
           userType = listData['user_type'];
           _userPrefrences = listData['preferences'] ?? "prefrence";
+        print("hiii");
+
+       setState(() {
+          final Map<String, dynamic> listData = json.decode(response.body);
+          uuid = listData['userid'];
+          userType = listData['user_type'];
+          _userPrefrences = listData['preferences'];
           ref.read(userSingletonProvider.notifier).AuthSucceed(
               _enteredEmail, uuid, userType, _userPrefrences, false);
         });
@@ -593,6 +600,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       print(error);
       _errorMEssage = "Connection Faliure, try again later!";
       return false;
+
+      return true;
     }
   }
 
