@@ -145,6 +145,42 @@ class FieldService:
             field_details['total_score'] = total_score
             field_scores.append(field_details)
         return sorted(field_scores, key=lambda x: x['total_score'], reverse=True)
+    
+    def _calculate_proximity_score(self, user_latitude, user_longitude, field, permission):
+        if not permission:
+            return 0
+        field_latitude = float(field.latitude)
+        field_longitude = float(field.longitude)
+        distance = sqrt((user_latitude - field_latitude) ** 2 + (user_longitude - field_longitude) ** 2)
+        if distance == 0:
+            distance = 1  # Avoid division by zero
+        return 1 / distance
+
+    def _calculate_rating_score(self, field_id):
+        avg_rating = self.field_dao.get_average_rating(field_id)
+        return 1 / (1 + exp(-avg_rating))
+
+    def _calculate_facilities_score(self, user_preferences, field_utilities):
+        user_vector = [user_preferences.get(util, 0) for util in user_preferences]
+        field_vector = [field_utilities.get(util, 0) for util in user_preferences]
+
+        dot_product = sum(u * f for u, f in zip(user_vector, field_vector))
+        user_magnitude = sqrt(sum(u ** 2 for u in user_vector))
+        field_magnitude = sqrt(sum(f ** 2 for f in field_vector))
+
+        if user_magnitude == 0 or field_magnitude == 0:
+            return 0
+
+        return dot_product / (user_magnitude * field_magnitude)
+
+    def _parse_preferences(self, preferences_str):
+        preferences = {}
+        if preferences_str:
+            prefs = preferences_str.split(',')
+            for pref in prefs:
+                util, value = pref.split('-')
+                preferences[util.strip()] = int(value.strip())
+        return preferences
 
     def get_filtered_fields(self, data):
         """Retrieves fields filtered by sport type, location, and availability."""
@@ -162,6 +198,32 @@ class FieldService:
             return {'message': 'No fields or user found'}, 200
         filtered_fields = [self.field.from_dict(field.asdict()) for field in fields if self._is_field_available(field, date, start_time, end_time)]
         return self.calculate_field_scores(user, filtered_fields, user_latitude, user_longitude, True), 200
+    
+    def _is_field_available(self, field, date, start_time, end_time):
+        reservations = self.reservation_dao.get_accepted_reservations_by_field_and_date(field.uid, date)
+        available_intervals = []
+
+        for interval in field.conf_interval.split():
+            time_range, _ = interval.split(',')
+            interval_start, interval_end = time_range.split('-')
+
+            # Special handling for edge case when interval ends at 00:00
+            if interval_end == "00:00" and (end_time < "23:59" or start_time > "00:00"):
+                continue
+
+            # Check if the time slot is within the requested range
+            if start_time <= interval_start and end_time >= interval_end:
+                # Check if this interval is free from reservations
+                is_available = True
+                for reservation in reservations:
+                    res_start_time, res_end_time = reservation.interval_time.split('-')
+                    if not (interval_end <= res_start_time or interval_start >= res_end_time):
+                        is_available = False
+                        break
+                if is_available:
+                    available_intervals.append(interval)
+
+        return available_intervals
 
     def get_reservation_report(self, manager_id, year):
         """Generates a reservation report for a manager by year."""
@@ -201,6 +263,9 @@ class FieldService:
                 except ValueError:
                     continue
         return hourly_report, 200
+    
+    
+
 
 def degrees_to_radians(degrees):
     """Converts degrees to radians."""
