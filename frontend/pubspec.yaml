@@ -19,7 +19,6 @@ dependencies:
   geocoding: ^2.1.0
   geolocator: ^10.1.0
   url_launcher: ^6.1.11
-  fl_chart: ^0.55.0
   fl_chart: ^0.69.0
   latlong2: ^0.8.2
   flutter_google_places: ^0.3.0

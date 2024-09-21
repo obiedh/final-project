@@ -73,6 +73,7 @@ class UserSingletonNotifier extends StateNotifier<Users> {
 
   void updatePreferences(String newPreferences) {
     state = Users(
+      sso: state.sso,
       authenticationVar: state.authenticationVar,
       name: state.name,
       phoneNumber: state.phoneNumber,
