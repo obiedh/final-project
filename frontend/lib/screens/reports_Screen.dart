@@ -54,7 +54,10 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen>
   }
 
   void _updateSelectedMonthYear() {
-    selectedMonthYear = '$selectedMonth.$selectedYear';
+    print("LETS DOT IT" + selectedMonthYear);
+    selectedMonthYear =
+        '${selectedMonth < 10 ? '0$selectedMonth' : selectedMonth}.$selectedYear';
+
     print('Selected MonthYear: $selectedMonthYear');
   }
 
@@ -118,6 +121,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen>
 
   Future<void> _getReportsByHours() async {
     final url = Uri.http(httpIP, 'api/get_hourly_reservations_report');
+
     try {
       Map<String, dynamic> requestBody = {
         "date": selectedMonthYear,
