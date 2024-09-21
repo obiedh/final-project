@@ -7,7 +7,6 @@ import 'package:SportGrounds/model/constants.dart';
 import 'package:SportGrounds/model/reservation.dart';
 import 'package:SportGrounds/providers/usersProvider.dart';
 import 'package:SportGrounds/screens/reservationDetails.dart';
-import 'package:SportGrounds/screens/reservation_screen.dart';
 import 'package:http/http.dart' as http;
 import '../widgets/reservation_item.dart';
 

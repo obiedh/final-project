@@ -148,15 +148,7 @@ class _ReservationScreenManagerState
                     itemBuilder: (ctx, index) {
                       return InkWell(
                         onTap: () {
-                          setState(() {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (ctx) => ReservationScreen(
-                                  reservation: approvedReservations[index],
-                                ),
-                              ),
-                            );
-                          });
+                          setState(() {});
                         },
                         child: ReservationItem(
                           reservation: approvedReservations[index],
