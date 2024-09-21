@@ -33,10 +33,13 @@ class _ConfirmBookState extends ConsumerState<ConfirmBookScreen> {
   Future<void> _createReservation(WidgetRef ref) async {
     final url = Uri.http(httpIP, 'api/create_reservation');
 
+    // Use the helper function to format the date
+    String formattedDate = formatDate(ref.read(confirmOrderProvider).date);
+
     try {
       Map<String, dynamic> requestBody = {
         "field_id": widget.stadium.id,
-        "date": ref.read(confirmOrderProvider).date,
+        "date": formattedDate,
         "interval_time": ref.read(confirmOrderProvider).intervalTime,
         "status": "pending",
         "du_date": "28.6.2023",
@@ -81,6 +84,21 @@ class _ConfirmBookState extends ConsumerState<ConfirmBookScreen> {
     }
     maskedNumber += cardNumber.substring(12); // Append the last 4 characters
     return maskedNumber;
+  }
+
+  String formatDate(String date) {
+    // Assuming the date format is "dd.MM.yyyy"
+    List<String> parts = date.split('.');
+
+    // Extract day, month, and year from the date
+    String day = parts[0];
+    String month = parts[1].length < 2
+        ? '0${parts[1]}'
+        : parts[1]; // Add leading zero if month is < 10
+    String year = parts[2];
+
+    // Return the formatted date
+    return '$day.$month.$year';
   }
 
   Future<bool?> _getPayment() async {

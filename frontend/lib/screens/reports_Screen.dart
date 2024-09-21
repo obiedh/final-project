@@ -57,7 +57,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen>
     print("LETS DOT IT" + selectedMonthYear);
     selectedMonthYear =
         '${selectedMonth < 10 ? '0$selectedMonth' : selectedMonth}.$selectedYear';
-
+    print("LETS DOT IT" + selectedMonthYear);
     print('Selected MonthYear: $selectedMonthYear');
   }
 
@@ -125,8 +125,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen>
     try {
       Map<String, dynamic> requestBody = {
         "date": selectedMonthYear,
-        "manager_id":
-            ref.read(userSingletonProvider).id // Replace with actual manager ID
+        "manager_id": ref.read(userSingletonProvider).id
       };
 
       final response = await http.post(
@@ -142,7 +141,6 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen>
         setState(() {
           _isLoading = false;
         });
-        // Handle error if needed
       } else {
         String responseBody = response.body.trim();
 
@@ -153,8 +151,9 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen>
           // Parse the response and format the date correctly
           Map<String, Map<String, List<Map<String, dynamic>>>> parsedData = {};
           jsonResponse.forEach((date, timeRanges) {
+            // Format the date with a leading zero for the month
             String formattedDate =
-                '${int.parse(date.split('.')[0])}.${date.split('.')[1]}';
+                '${int.parse(date.split('.')[0]) < 10 ? '0${int.parse(date.split('.')[0])}' : date.split('.')[0]}.${date.split('.')[1]}';
             parsedData[formattedDate] = {};
 
             (timeRanges as Map<String, dynamic>).forEach((timeRange, details) {
@@ -173,8 +172,6 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen>
             print("Parsed Data:");
             print(hourlyReservations);
           });
-
-          // You can now use the 'hourlyReservations' map as needed
         }
       }
     } catch (error) {
